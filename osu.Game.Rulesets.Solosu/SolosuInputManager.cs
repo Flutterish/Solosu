@@ -4,9 +4,7 @@ using System.ComponentModel;
 
 namespace osu.Game.Rulesets.Solosu {
 	public class SolosuInputManager : RulesetInputManager<SolosuAction> {
-		public SolosuInputManager ( RulesetInfo ruleset )
-			: base( ruleset, 0, SimultaneousBindingMode.Unique ) {
-		}
+		public SolosuInputManager ( RulesetInfo ruleset ) : base( ruleset, 0, SimultaneousBindingMode.Unique ) { }
 	}
 
 	public enum SolosuAction {
@@ -19,10 +17,10 @@ namespace osu.Game.Rulesets.Solosu {
 		[Description( "Left" )]
 		Left,
 
-		[Description( "Right" )]
-		Right,
-
 		[Description( "Center" )] // this is for elastic input
-		Center
+		Center,
+
+		[Description( "Right" )]
+		Right
 	}
 }

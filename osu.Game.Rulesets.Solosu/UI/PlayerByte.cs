@@ -10,14 +10,13 @@ using osuTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace osu.Game.Rulesets.Solosu.UI {
 	public class PlayerByte : CompositeDrawable, IKeyBindingHandler<SolosuAction> {
 		List<SolosuAction> moves = new();
 		[Resolved]
 		Dictionary<SolosuLane, Lane> lanes { get; set; }
-		SolosuLane lane = SolosuLane.Center;
+		public SolosuLane Lane { get; private set; } = SolosuLane.Center;
 
 		PlayerVisual @byte;
 		Dictionary<SolosuLane, BufferIndicator> bufferIndicators = new();
@@ -30,7 +29,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		public bool OnPressed ( SolosuAction action ) {
-			if ( action is SolosuAction.Left or SolosuAction.Right or SolosuAction.Center ) {
+			if ( action.IsMovement() ) {
 				moves.Add( action );
 				updatePosition();
 			}
@@ -39,7 +38,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		public void OnReleased ( SolosuAction action ) {
-			if ( action is SolosuAction.Left or SolosuAction.Right or SolosuAction.Center ) {
+			if ( action.IsMovement() ) {
 				moves.Remove( action );
 				updatePosition();
 			}
@@ -51,8 +50,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 				lane = moves.Last().GetLane();
 			}
 
-			if ( lane != this.lane ) {
-				this.lane = lane;
+			if ( lane != this.Lane ) {
+				this.Lane = lane;
 				@byte.MoveTo( lanes[ lane ] );
 			}
 
@@ -61,7 +60,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			}
 		}
 
-		[Resolved( name: nameof( SolosuPlayfield.AccentColour ) )]
+		[Resolved( name: nameof( SolosuPlayfield.PerfectColour ) )]
 		Bindable<Colour4> accentColour { get; set; }
 		[BackgroundDependencyLoader]
 		private void load () {
