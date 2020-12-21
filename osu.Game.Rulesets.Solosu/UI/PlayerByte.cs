@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
 using osu.Framework.Allocation;
-using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
@@ -33,6 +32,9 @@ namespace osu.Game.Rulesets.Solosu.UI {
 				moves.Add( action );
 				updatePosition();
 			}
+			else if ( action.IsAction() ) {
+				@byte.ScaleTo( 0.8f, 20 ).Then().ScaleTo( 1, 50 );
+			}
 
 			return false;
 		}
@@ -60,11 +62,11 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			}
 		}
 
-		[Resolved( name: nameof( SolosuPlayfield.PerfectColour ) )]
-		Bindable<Colour4> accentColour { get; set; }
+		[Resolved]
+		public SolosuColours Colours { get; private set; }
 		[BackgroundDependencyLoader]
 		private void load () {
-			accentColour.BindValueChanged( v => Colour = v.NewValue, true );
+			Colour = Colours.Perfect;
 			foreach ( var i in lanes ) {
 				var indicator = new BufferIndicator { Size = new Vector2( 10 ), X = i.Value.X, Anchor = Anchor.Centre, Origin = Anchor.Centre };
 				AddInternal( indicator );

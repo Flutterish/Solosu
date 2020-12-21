@@ -1,45 +1,35 @@
-﻿using osu.Framework.Graphics;
-using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Shapes;
+﻿using osu.Framework.Allocation;
+using osu.Framework.Graphics;
+using osu.Framework.Graphics.Colour;
+using osu.Framework.Graphics.OpenGL.Vertices;
+using osu.Framework.Graphics.Primitives;
+using osu.Framework.Graphics.Shaders;
+using osu.Framework.Graphics.Textures;
+using osu.Framework.Layout;
 using osuTK;
 using System;
 using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.UI {
-	public class Wireframe : CompositeDrawable {
+	public class Wireframe : Drawable {
 		public Quaternion Rotation3D;
 		public Vector3 Offset;
 		public Vector2 FOV = new Vector2( 120 );
 		public List<Line> Lines = new();
 
 		protected override void Update () {
-			while ( InternalChildren.Count < Lines.Count ) {
-				AddInternal( new Box { Anchor = Anchor.Centre, Origin = Anchor.Centre } );
-			}
-			foreach ( var i in InternalChildren ) {
-				i.Alpha = 0;
-			}
-			for ( int i = 0; i < Lines.Count; i++ ) {
-				var line = Lines[ i ];
-				var child = InternalChildren[ i ];
+			base.Update();
 
-				var a = Project( line.From.Position );
-				var b = Project( line.To.Position );
+			Invalidate( Invalidation.MiscGeometry, InvalidationSource.Self );
+		}
 
-				if ( Math.Abs( a.X ) > Size.X ) continue;
-				if ( Math.Abs( b.X ) > Size.X ) continue;
-				if ( Math.Abs( a.Y ) > Size.Y ) continue;
-				if ( Math.Abs( b.Y ) > Size.Y ) continue;
+		public Vector2 ToLocalSpace ( Vector3 pos ) {
+			pos = ( Rotation3D * new Vector4( pos ) ).Xyz - Offset;
 
-				var length = ( a - b ).Length;
-
-				child.Height = length + 2;
-				child.Width = 2;
-
-				child.Position = ( a + b ) / 2;
-				child.Rotation = MathF.Atan2( ( a - b ).Y, ( a - b ).X ) * 180 / MathF.PI + 90;
-				child.Alpha = 1;
-			}
+			return new Vector2(
+				Size.X * MathF.Atan2( pos.X, pos.Z ) / ( FOV.X / 180 * MathF.PI ),
+				Size.Y * MathF.Atan2( pos.Y, pos.Z ) / ( FOV.X / 180 * MathF.PI )
+			);
 		}
 
 		public void AddLine ( Vertice from, Vertice to, int segments ) {
@@ -51,13 +41,78 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			}
 		}
 
-		public Vector2 Project ( Vector3 pos ) {
-			pos = ( Rotation3D * new Vector4( pos ) ).Xyz - Offset;
+		[BackgroundDependencyLoader]
+		private void load ( ShaderManager shaders ) {
+			TextureShader = shaders.Load( VertexShaderDescriptor.TEXTURE_2, FragmentShaderDescriptor.TEXTURE );
+			RoundedTextureShader = shaders.Load( VertexShaderDescriptor.TEXTURE_2, FragmentShaderDescriptor.TEXTURE_ROUNDED );
+		}
 
-			return new Vector2(
-				Size.X * MathF.Atan2( pos.X, pos.Z ) / ( FOV.X / 180 * MathF.PI ),
-				Size.Y * MathF.Atan2( pos.Y, pos.Z ) / ( FOV.X / 180 * MathF.PI )
-			);
+		public IShader TextureShader { get; protected set; }
+		public IShader RoundedTextureShader { get; protected set; }
+
+		protected override DrawNode CreateDrawNode ()
+			=> new WireframeDrawNode( this );
+
+		private class WireframeDrawNode : DrawNode {
+			private Wireframe wf;
+			private Texture texture;
+			List<Line> lines;
+			Vector2 size;
+			Quaternion rot;
+			Vector3 offset;
+			Vector2 fov;
+			IShader shader;
+			float width = 3;
+			ColourInfo colourInfo;
+			public WireframeDrawNode ( Wireframe source ) : base( source ) {
+				texture = Texture.WhitePixel;
+				wf = source;
+			}
+
+			public override void ApplyState () {
+				base.ApplyState();
+				lines = wf.Lines;
+				size = wf.Size;
+				rot = wf.Rotation3D;
+				offset = wf.Offset;
+				fov = wf.FOV;
+				shader = wf.TextureShader;
+				colourInfo = Source.DrawColourInfo.Colour;
+			}
+
+			public override void Draw ( Action<TexturedVertex2D> vertexAction ) {
+				base.Draw( vertexAction );
+
+				shader.Bind();
+
+				for ( int i = 0; i < wf.Lines.Count; i++ ) {
+					var line = lines[ i ];
+
+					var from = Project( line.From.Position );
+					var to = Project( line.To.Position );
+					var dif = ( from - to ).Normalized(); // make them a bit longer so they overlap
+					from += dif;
+					to -= dif;
+					var perp = dif.PerpendicularLeft * width / 2;
+
+					DrawQuad( texture, new Quad( from + perp, from - perp, to + perp, to - perp ), colourInfo );
+				}
+
+				shader.Unbind();
+			}
+			protected override bool CanDrawOpaqueInterior => false;
+
+			Vector2 Project ( Vector3 pos ) {
+				pos = ( rot * new Vector4( pos ) ).Xyz - offset;
+
+				return ToScreen( new Vector2(
+					size.X * ( 0.5f + MathF.Atan2( pos.X, pos.Z ) / ( fov.X / 180 * MathF.PI ) ), // NOTE this might break with anchor and origins, idk
+					size.Y * ( 0.5f + MathF.Atan2( pos.Y, pos.Z ) / ( fov.X / 180 * MathF.PI ) )
+				) );
+			}
+
+			Vector2 ToScreen ( Vector2 pos )
+				=> Vector2Extensions.Transform( pos, DrawInfo.Matrix );
 		}
 	}
 

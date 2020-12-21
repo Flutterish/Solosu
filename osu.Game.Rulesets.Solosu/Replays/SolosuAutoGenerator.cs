@@ -9,7 +9,6 @@ using System.Linq;
 
 namespace osu.Game.Rulesets.Solosu.Replays {
 	public class SolosuAutoGenerator : AutoGenerator {
-		// TODO SolosuAutoGenerator
 		protected Replay Replay;
 		protected List<ReplayFrame> Frames => Replay.Frames;
 

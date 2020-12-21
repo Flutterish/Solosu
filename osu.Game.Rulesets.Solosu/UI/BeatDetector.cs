@@ -11,6 +11,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public event BeatEvent OnBeat;
 		protected override void OnNewBeat ( int beatIndex, TimingControlPoint timingPoint, EffectControlPoint effectPoint, ChannelAmplitudes amplitudes ) {
 			vectors.Clear();
+			floats.Clear();
 
 			base.OnNewBeat( beatIndex, timingPoint, effectPoint, amplitudes );
 			OnBeat?.Invoke( beatIndex, timingPoint, effectPoint, amplitudes );
@@ -23,6 +24,14 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			}
 
 			return vectors[ index ];
+		}
+		private List<float> floats = new();
+		public float RandomFloat ( int index ) {
+			while ( index >= floats.Count ) {
+				floats.Add( RNG.NextSingle() );
+			}
+
+			return floats[ index ];
 		}
 	}
 }

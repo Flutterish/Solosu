@@ -1,5 +1,4 @@
 ﻿using osu.Framework.Allocation;
-using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
@@ -13,18 +12,10 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		}
 		private SolosuInputManager inputManager;
 		protected SolosuInputManager InputManager => inputManager ??= ( GetContainingInputManager() as SolosuInputManager );
-		protected override double InitialLifetimeOffset => 6000;
+		protected override double InitialLifetimeOffset => 3000; // TODO this might need to be set on test scenes
 
-		[Resolved( name: nameof( SolosuPlayfield.PerfectColour ) )]
-		public Bindable<Colour4> PerfectColour { get; private set; }
-		[Resolved( name: nameof( SolosuPlayfield.GreatColour ) )]
-		public Bindable<Colour4> GreatColour { get; private set; }
-		[Resolved( name: nameof( SolosuPlayfield.MehColour ) )]
-		public Bindable<Colour4> MehColour { get; private set; }
-		[Resolved( name: nameof( SolosuPlayfield.MissColour ) )]
-		public Bindable<Colour4> MissColour { get; private set; }
-		[Resolved( name: nameof( SolosuPlayfield.RegularColour ) )]
-		public Bindable<Colour4> RegularColour { get; private set; }
+		[Resolved]
+		public SolosuColours Colours { get; private set; }
 		[Resolved]
 		public PlayerByte Player { get; private set; }
 		public HitWindows HitWindows => HitObject.HitWindows;
@@ -32,14 +23,14 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		public Lane Lane { get; private set; }
 
 		protected virtual Colour4 ColourFor ( HitResult result ) {
-			if ( result == HitResult.Perfect ) return PerfectColour.Value;
-			if ( result == HitResult.Great ) return GreatColour.Value;
-			if ( result == HitResult.Meh ) return MehColour.Value;
-			else return MissColour.Value;
+			if ( result == HitResult.Perfect ) return Colours.Perfect;
+			if ( result == HitResult.Great ) return Colours.Great;
+			if ( result == HitResult.Meh ) return Colours.Meh;
+			else return Colours.Miss;
 		}
 
 		protected override void UpdateInitialTransforms () {
-			Lane.ApplyInitialTransformsTo( this );
+			Lane.EmergeFromTheCube( this );
 		}
 	}
 

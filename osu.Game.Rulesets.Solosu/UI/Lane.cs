@@ -27,12 +27,13 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Resolved( name: nameof( SolosuPlayfield.HitHeight ) )]
 		public BindableDouble HitHeight { get; private set; }
 
-		public void ApplyInitialTransformsTo ( DrawableSolosuHitObject ho ) {
+		public void EmergeFromTheCube ( DrawableSolosuHitObject ho ) {
+			var timeAtCube = -( ( DrawHeight - HitHeight.Value - 150 / 2 /*cube size*/ - 70 /*cube position*/ ) * ScrollDuration.Value / SCROLL_HEIGHT - ho.HitObject.StartTime );
+
 			ho.MoveToX( -X );
 			ho.FadeOut();
 			ho.RotateTo( MathF.Atan2( -20, -X ) * 180 / MathF.PI + 90 );
 
-			var timeAtCube = -( ( DrawHeight - HitHeight.Value - 150 / 2 /*cube size*/ - 70 /*cube position*/ ) * ScrollDuration.Value / SCROLL_HEIGHT - ho.HitObject.StartTime );
 			using ( ho.BeginAbsoluteSequence( timeAtCube - 100 ) ) {
 				ho.Delay( 100 ).MoveToX( 0, 200, Easing.Out ).RotateTo( 0, 200 );
 				ho.FadeInFromZero( 500 );

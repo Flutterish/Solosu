@@ -2,11 +2,14 @@
 using osu.Framework.Audio.Track;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.Containers;
 using osu.Game.Beatmaps.ControlPoints;
 using osu.Game.Rulesets.Objects;
+using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Solosu.Objects;
 using osu.Game.Rulesets.UI;
 using osuTK;
+using System;
 using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.UI {
@@ -14,18 +17,28 @@ namespace osu.Game.Rulesets.Solosu.UI {
 	public class SolosuPlayfield : Playfield {
 		[Cached]
 		private PlayerByte player = new PlayerByte { Anchor = Anchor.BottomCentre, Depth = -9999 };
+		public readonly Container CubeContainer;
 		private Wireframe cube;
 		private Wireframe cubeR;
 		private Wireframe cubeG;
 		private Wireframe cubeB;
 
 		public SolosuPlayfield () {
-			AddInternal( player ); // player goes before hitobjects bc input blocking
+			AddInternal( solosuColours = new() );
+			AddInternal( player );
 			AddInternal( beat );
-			AddInternal( cubeR = new Cube { Size = new Vector2( 150 ), Y = 70, Anchor = Anchor.TopCentre, Origin = Anchor.TopCentre, Colour = Colour4.Red, Alpha = 0.4f } );
-			AddInternal( cubeG = new Cube { Size = new Vector2( 150 ), Y = 70, Anchor = Anchor.TopCentre, Origin = Anchor.TopCentre, Colour = Colour4.Green, Alpha = 0.4f } );
-			AddInternal( cubeB = new Cube { Size = new Vector2( 150 ), Y = 70, Anchor = Anchor.TopCentre, Origin = Anchor.TopCentre, Colour = Colour4.Blue, Alpha = 0.4f } );
-			AddInternal( cube = new Cube { Size = new Vector2( 150 ), Y = 70, Anchor = Anchor.TopCentre, Origin = Anchor.TopCentre } );
+			AddInternal( CubeContainer = new Container {
+				Origin = Anchor.TopCentre,
+				Anchor = Anchor.TopCentre,
+				Y = 70,
+				Height = 150,
+				Children = new[] {
+					cubeR = new Cube { Size = new Vector2( 150 ), Anchor = Anchor.Centre, Origin = Anchor.Centre, Colour = Colour4.Red, Alpha = 0.4f },
+					cubeG = new Cube { Size = new Vector2( 150 ), Anchor = Anchor.Centre, Origin = Anchor.Centre, Colour = Colour4.Green, Alpha = 0.4f },
+					cubeB = new Cube { Size = new Vector2( 150 ), Anchor = Anchor.Centre, Origin = Anchor.Centre, Colour = Colour4.Blue, Alpha = 0.4f },
+					cube = new Cube { Size = new Vector2( 150 ), Anchor = Anchor.Centre, Origin = Anchor.Centre }
+				}
+			} );
 			AddInternal( HitObjectContainer );
 			HitObjectContainer.Origin = Anchor.BottomCentre;
 			HitObjectContainer.Anchor = Anchor.BottomCentre;
@@ -46,6 +59,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 			HitHeight.BindValueChanged( v => player.Y = -(float)v.NewValue, true );
 			beat.OnBeat += OnBeat;
+
+			NewResult += OnNewResult;
 		}
 
 		protected override void Update () {
@@ -58,16 +73,24 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		private void OnBeat ( int beatIndex, TimingControlPoint timingPoint, EffectControlPoint effectPoint, ChannelAmplitudes amplitudes ) {
 			// thanks, hishi ;))))))
 			if ( effectPoint.KiaiMode ) {
-				float sickoMode = 30 * amplitudes.Average;
+				float sickoMode = 30 * amplitudes.Average * beat.RandomFloat( 0 );
 
-				cube.ScaleTo( 1 - sickoMode / 200, 50 ).Then().ScaleTo( 1, 100 );
-				cubeR.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( new Vector2( 0, 70 ), 100 );
-				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( new Vector2( 0, 70 ), 100 );
-				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( new Vector2( 0, 70 ), 100 );
+				cubeR.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
+				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
+				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
 			}
 		}
 
-		protected override HitObjectLifetimeEntry CreateLifetimeEntry ( HitObject hitObject ) => new SolosuLifetimeEntry( hitObject );
+		private void OnNewResult ( DrawableHitObject dho, Judgements.JudgementResult j ) {
+			if ( j.Type == Rulesets.Scoring.HitResult.Miss ) {
+
+			}
+			else {
+				CubeContainer.ScaleTo( MathF.Max( CubeContainer.Scale.X * 0.92f, 0.5f ), 50 ).Then().ScaleTo( 1, 100 );
+			}
+		}
+
+		protected override HitObjectLifetimeEntry CreateLifetimeEntry ( HitObject hitObject ) => new SolosuLifetimeEntry( hitObject, ScrollDuration );
 		[Cached]
 		BeatDetector beat = new BeatDetector();
 		[Cached( name: nameof( ScrollDuration ) )]
@@ -78,16 +101,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Cached]
 		public readonly Dictionary<SolosuLane, Lane> Lanes = new();
 		public const double LANE_WIDTH = 200;
-		[Cached( name: nameof( PerfectColour ) )] // NOTE these three arent dynamic anywhere, they only apply when an animation starts
-		public readonly Bindable<Colour4> PerfectColour = new( Colour4.FromHex( "#ff7be0" ) );
-		[Cached( name: nameof( GreatColour ) )]
-		public readonly Bindable<Colour4> GreatColour = new( Colour4.FromHex( "#f95bae" ) );
-		[Cached( name: nameof( MehColour ) )]
-		public readonly Bindable<Colour4> MehColour = new( Colour4.FromHex( "#f33b7c" ) );
-		[Cached( name: nameof( MissColour ) )]
-		public readonly Bindable<Colour4> MissColour = new( Colour4.FromHex( "#ed1a48" ) );
-		[Cached( name: nameof( RegularColour ) )]
-		public readonly Bindable<Colour4> RegularColour = new( Colour4.Cyan );
+		[Cached]
+		public readonly SolosuColours solosuColours;
 
 		public override void Add ( HitObject hitObject ) {
 			var h = hitObject as SolosuHitObject;

@@ -38,18 +38,18 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		private void OnBeat ( int beatIndex, TimingControlPoint timingPoint, EffectControlPoint effectPoint, ChannelAmplitudes amplitudes ) {
 			// thanks, hishi ;))))))
 			if ( effectPoint.KiaiMode ) {
-				float sickoMode = 10 * amplitudes.Average;
+				float sickoMode = 10 * amplitudes.Average * beat.RandomFloat( 0 );
 
 				main.ScaleTo( 1 - sickoMode / 28, 50 ).Then().ScaleTo( 1, 100 );
-				r.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( new Vector2( 0 ), 100 );
-				g.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( new Vector2( 0 ), 100 );
-				b.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( new Vector2( 0 ), 100 );
+				r.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
+				g.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
+				b.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
 			}
 		}
 
 		protected override void OnApply () {
 			base.OnApply();
-			main.Colour = RegularColour.Value;
+			main.Colour = Colours.Regular;
 			Size = new Vector2( 30 );
 			Origin = Anchor.Centre;
 
