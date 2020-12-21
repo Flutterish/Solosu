@@ -15,15 +15,9 @@ using osuTK;
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 	public class DrawablePacket : DrawableSolosuHitObject<Packet>, IKeyBindingHandler<SolosuAction> {
 		PacketVisual main;
-		PacketVisual r;
-		PacketVisual g;
-		PacketVisual b;
 
 		public DrawablePacket () {
 			AddRangeInternal( new Drawable[] {
-				r = new PacketVisual( fillProgress ) { Colour = Colour4.Red, Alpha = 0.4f },
-				g = new PacketVisual( fillProgress ) { Colour = Colour4.Green, Alpha = 0.4f },
-				b = new PacketVisual( fillProgress ) { Colour = Colour4.Blue, Alpha = 0.4f },
 				main = new PacketVisual( fillProgress )
 			} );
 		}
@@ -41,11 +35,13 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 				float sickoMode = 10 * amplitudes.Average * beat.RandomFloat( 0 );
 
 				main.ScaleTo( 1 - sickoMode / 28, 50 ).Then().ScaleTo( 1, 100 );
-				r.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
-				g.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
-				b.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
 			}
 		}
+
+		protected override void UpdateInitialTransforms () {
+			Lane.EmergeFromTheCube( this );
+		}
+		public override bool UsesPositionalAnimations => true;
 
 		protected override void OnApply () {
 			base.OnApply();
@@ -58,6 +54,8 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		}
 
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
+			if ( Judged ) return;
+
 			if ( HitWindows.CanBeHit( timeOffset ) ) {
 				var result = HitWindows.ResultFor( timeOffset );
 				if ( userTriggered && result != HitResult.None ) {

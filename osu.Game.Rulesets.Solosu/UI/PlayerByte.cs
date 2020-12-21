@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace osu.Game.Rulesets.Solosu.UI {
+namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an animation
 	public class PlayerByte : CompositeDrawable, IKeyBindingHandler<SolosuAction> {
 		List<SolosuAction> moves = new();
 		[Resolved]
@@ -27,13 +27,15 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			AutoSizeAxes = Axes.Both;
 		}
 
+		List<SolosuAction> held = new();
 		public bool OnPressed ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
 				moves.Add( action );
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
-				@byte.ScaleTo( 0.8f, 20 ).Then().ScaleTo( 1, 50 );
+				held.Add( action );
+				@byte.ScaleTo( 0.8f, 20 );
 			}
 
 			return false;
@@ -43,6 +45,10 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			if ( action.IsMovement() ) {
 				moves.Remove( action );
 				updatePosition();
+			}
+			else if ( action.IsAction() ) {
+				held.Remove( action );
+				if ( held.Empty() ) @byte.ScaleTo( 1, 50 );
 			}
 		}
 

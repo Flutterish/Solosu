@@ -29,9 +29,20 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			else return Colours.Miss;
 		}
 
-		protected override void UpdateInitialTransforms () {
-			Lane.EmergeFromTheCube( this );
+		public void ReapplyTransforms () {
+			ClearTransforms( true );
+			using ( BeginAbsoluteSequence( LifetimeStart ) ) {
+				UpdateInitialTransforms();
+			}
+			using ( BeginAbsoluteSequence( HitObject.StartTime ) ) {
+				UpdateStartTimeStateTransforms();
+			}
+			using ( BeginAbsoluteSequence( HitStateUpdateTime ) ) {
+				UpdateHitStateTransforms( State.Value );
+			}
 		}
+
+		public virtual bool UsesPositionalAnimations => false;
 	}
 
 	public abstract class DrawableSolosuHitObject<T> : DrawableSolosuHitObject where T : SolosuHitObject {

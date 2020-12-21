@@ -65,27 +65,40 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 
 			SolosuAction lastButton = SolosuAction.Button2;
 			double lastPressTime = 0;
-			void press ( double time ) {
+			void press ( double time, double duration = 0 ) {
 				lastButton = lastButton == SolosuAction.Button2 ? SolosuAction.Button1 : SolosuAction.Button2; // NOTE you could make these 2 buttons independant
 
 				if ( time - lastPressTime >= KEY_UP_DELAY ) {
 					presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
 				}
 				presses.Add( (time, lastButton.Yield()) );
-				lastPressTime = time;
+				lastPressTime = time + duration;
 			}
 
 			double previousTime = 0;
+			SolosuAction dodgeDirection = SolosuAction.Right;
 			foreach ( SolosuHitObject hitObject in Beatmap.HitObjects ) {
-				SolosuAction action = SolosuAction.Center;
-				if ( hitObject.Lane == SolosuLane.Center ) action = SolosuAction.Center;
-				else if ( hitObject.Lane == SolosuLane.Left ) action = SolosuAction.Left;
-				else if ( hitObject.Lane == SolosuLane.Right ) action = SolosuAction.Right;
+				SolosuAction action = hitObject.Lane.GetAction();
 
-				moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
-				press( hitObject.StartTime );
+				if ( hitObject is Packet ) {
+					moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
+					press( hitObject.StartTime );
 
-				previousTime = hitObject.StartTime;
+					previousTime = hitObject.StartTime;
+				}
+				else if ( hitObject is Stream s ) {
+					if ( held.GetLane() == s.Lane ) {
+						if ( action == SolosuAction.Center ) {
+							action = dodgeDirection;
+							dodgeDirection = dodgeDirection == SolosuAction.Right ? SolosuAction.Left : SolosuAction.Right;
+						}
+						else
+							action = SolosuAction.Center;
+
+						moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
+					}
+					previousTime = s.EndTime;
+				}
 			}
 
 			presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );

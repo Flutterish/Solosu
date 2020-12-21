@@ -61,6 +61,14 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			beat.OnBeat += OnBeat;
 
 			NewResult += OnNewResult;
+			KiaiBindable.BindValueChanged( v => {
+				if ( v.NewValue ) {
+					this.TransformBindableTo( ScrollDuration, 2000, 400 );
+				}
+				else {
+					this.TransformBindableTo( ScrollDuration, 3000, 400 );
+				}
+			} );
 		}
 
 		protected override void Update () {
@@ -70,6 +78,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			cubeB.Rotation3D = Quaternion.FromAxisAngle( new Vector3( 0.3f, 1, 0 ), (float)Time.Current / 1000 );
 		}
 
+		[Cached( name: nameof( KiaiBindable ) )]
+		public readonly BindableBool KiaiBindable = new( false );
 		private void OnBeat ( int beatIndex, TimingControlPoint timingPoint, EffectControlPoint effectPoint, ChannelAmplitudes amplitudes ) {
 			// thanks, hishi ;))))))
 			if ( effectPoint.KiaiMode ) {
@@ -79,6 +89,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
 				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
 			}
+
+			KiaiBindable.Value = effectPoint.KiaiMode;
 		}
 
 		private void OnNewResult ( DrawableHitObject dho, Judgements.JudgementResult j ) {

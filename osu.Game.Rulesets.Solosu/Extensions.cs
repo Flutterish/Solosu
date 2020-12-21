@@ -41,6 +41,9 @@ namespace osu.Game.Rulesets.Solosu {
 			=> action is SolosuAction.Left or SolosuAction.Right or SolosuAction.Center;
 		public static bool IsAction ( this SolosuAction action )
 			=> action is SolosuAction.Button1 or SolosuAction.Button2;
+
+		public static bool Empty<T> ( this IEnumerable<T> self )
+			=> !self.Any();
 	}
 
 	public static class Enum<T> where T : Enum {
