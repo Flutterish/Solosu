@@ -22,6 +22,10 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		[Resolved]
 		public Lane Lane { get; private set; }
 
+		protected override void Update () {
+			Y = -(float)Lane.HeightAtTime( Clock.CurrentTime, HitObject.StartTime );
+		}
+
 		protected virtual Colour4 ColourFor ( HitResult result ) {
 			if ( result == HitResult.Perfect ) return Colours.Perfect;
 			if ( result == HitResult.Great ) return Colours.Great;

@@ -85,9 +85,9 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			if ( effectPoint.KiaiMode ) {
 				float sickoMode = 30 * amplitudes.Average * beat.RandomFloat( 0 );
 
-				cubeR.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
-				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
-				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
+				cubeR.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // BUG can lock itself into kiai when rewinding
+				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // since these dont get cleared, this should be ignored when going bachwards and ignore new ones
+				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // before latest scheduled time
 			}
 
 			KiaiBindable.Value = effectPoint.KiaiMode;
@@ -109,7 +109,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public readonly BindableDouble ScrollDuration = new( 3000 );
 		public const double SCROLL_HEIGHT = 900;
 		[Cached( name: nameof( HitHeight ) )]
-		public readonly BindableDouble HitHeight = new( 200 );
+		public readonly BindableDouble HitHeight = new( 160 );
 		[Cached]
 		public readonly Dictionary<SolosuLane, Lane> Lanes = new();
 		public const double LANE_WIDTH = 200;

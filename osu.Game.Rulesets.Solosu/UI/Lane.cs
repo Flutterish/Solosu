@@ -29,7 +29,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Resolved( name: nameof( SolosuPlayfield.HitHeight ) )]
 		public BindableDouble HitHeight { get; private set; }
 		[Resolved( name: nameof( SolosuPlayfield.KiaiBindable ) )]
-		public BindableBool KiaiBindable { get; private set; }
+		public BindableBool KiaiBindable { get; private set; } // BUG when rewinding some transforms this triggers dont revert ( LazerSpeed ). we could check if time is reverted and apply the transforms <duration> before.
 
 		public readonly BindableDouble LazerSpeed = new( 1 );
 
@@ -45,7 +45,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			} );
 
 			ScrollDuration.BindValueChanged( v => {
-				foreach ( DrawableSolosuHitObject i in HitObjectContainer.AliveObjects.Where( x => x is DrawableSolosuHitObject y && y.UsesPositionalAnimations ) ) {
+				foreach ( var i in HitObjectContainer.AliveObjects.OfType<DrawableSolosuHitObject>().Where( x => x.UsesPositionalAnimations ) ) {
 					i.ReapplyTransforms(); // NOTE might be quite eqpensive. would be nice if we just used a curve that follows y
 				}
 			} );
@@ -75,19 +75,5 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		public double CubeHeight => DrawHeight - 150 / 2 - 70;
-
-		protected override void UpdateAfterChildren () { // TODO move to drawables
-			foreach ( var i in HitObjectContainer.AliveObjects.OfType<DrawablePacket>() ) {
-				i.Y = (float)-HeightAtTime( Clock.CurrentTime, i.HitObject.StartTime );
-			}
-
-			foreach ( var i in HitObjectContainer.AliveObjects.OfType<DrawableStream>() ) {
-				var a = HeightAtTime( Clock.CurrentTime, i.HitObject.StartTime, LazerSpeed.Value );
-				var b = HeightAtTime( Clock.CurrentTime, i.HitObject.EndTime, LazerSpeed.Value );
-
-				i.Y = (float)-a;
-				i.Height = (float)( b - a );
-			}
-		}
 	}
 }

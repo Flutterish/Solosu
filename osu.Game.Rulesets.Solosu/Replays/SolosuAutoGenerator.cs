@@ -86,7 +86,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 
 					previousTime = hitObject.StartTime;
 				}
-				else if ( hitObject is Stream s ) {
+				else if ( hitObject is Stream s ) { // TODO double taps fuck the bot up
 					if ( held.GetLane() == s.Lane ) {
 						if ( action == SolosuAction.Center ) {
 							action = dodgeDirection;

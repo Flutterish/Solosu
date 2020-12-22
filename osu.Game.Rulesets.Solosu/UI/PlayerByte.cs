@@ -3,6 +3,7 @@ using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Bindings;
 using osu.Game.Rulesets.Solosu.Objects;
 using osuTK;
@@ -18,13 +19,15 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 		public SolosuLane Lane { get; private set; } = SolosuLane.Center;
 
 		PlayerVisual @byte;
+		PlayerLine line;
 		Dictionary<SolosuLane, BufferIndicator> bufferIndicators = new();
 		public PlayerByte () {
+			AddInternal( line = new PlayerLine { Origin = Anchor.Centre, Anchor = Anchor.Centre } );
 			AddInternal( @byte = new PlayerVisual { Origin = Anchor.Centre, Anchor = Anchor.Centre } );
 			Origin = Anchor.Centre;
+			AutoSizeAxes = Axes.Y;
+			Width = 500;
 			Masking = true;
-			CornerRadius = 8;
-			AutoSizeAxes = Axes.Both;
 		}
 
 		List<SolosuAction> held = new();
@@ -68,16 +71,21 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 			}
 		}
 
+		protected override void Update () {
+			line.X = @byte.X / 4;
+		}
+
 		[Resolved]
 		public SolosuColours Colours { get; private set; }
 		[BackgroundDependencyLoader]
 		private void load () {
-			Colour = Colours.Perfect;
 			foreach ( var i in lanes ) {
-				var indicator = new BufferIndicator { Size = new Vector2( 10 ), X = i.Value.X, Anchor = Anchor.Centre, Origin = Anchor.Centre };
+				var indicator = new BufferIndicator { Size = new Vector2( 10 ), X = i.Value.X, Anchor = Anchor.Centre, Origin = Anchor.Centre, Colour = Colours.Perfect };
 				AddInternal( indicator );
 				bufferIndicators.Add( i.Key, indicator );
 			}
+			@byte.Colour = Colours.Perfect;
+			line.Colour = Colours.Miss;
 		}
 
 		private class BufferIndicator : Circle {
@@ -118,6 +126,15 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 				float height = MathF.Sqrt( volume ) - MathF.Sqrt( distance ) / 4;
 
 				box.ResizeTo( new Vector2( volume / height, height ), 40 ).Then().ResizeTo( MathF.Sqrt( volume ), 10 );
+			}
+		}
+
+		private class PlayerLine : CompositeDrawable {
+			public PlayerLine () {
+				Origin = Anchor.Centre;
+				Anchor = Anchor.Centre;
+				AddInternal( new Sprite { Width = 500, Height = 2, Origin = Anchor.Centre, Anchor = Anchor.Centre, Texture = SolosuTextures.WidthFade( 500, 2 ), Alpha = 0.6f } );
+				// TODO maybe add the key being held effect ftom the key overlay when on the side
 			}
 		}
 	}

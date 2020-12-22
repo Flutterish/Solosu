@@ -1,6 +1,5 @@
 ﻿using osu.Framework.Allocation;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.OpenGL.Vertices;
 using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Shaders;
@@ -15,7 +14,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public Quaternion Rotation3D;
 		public Vector3 Offset;
 		public Vector2 FOV = new Vector2( 120 );
-		public List<Line> Lines = new();
+		public readonly List<Line> Lines = new();
 
 		protected override void Update () {
 			base.Update();
@@ -56,28 +55,20 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		private class WireframeDrawNode : DrawNode {
 			private Wireframe wf;
 			private Texture texture;
-			List<Line> lines;
+			readonly List<Line> lines;
 			Vector2 size;
-			Quaternion rot;
-			Vector3 offset;
-			Vector2 fov;
 			IShader shader;
 			float width = 3;
-			ColourInfo colourInfo;
 			public WireframeDrawNode ( Wireframe source ) : base( source ) {
 				texture = Texture.WhitePixel;
 				wf = source;
+				lines = wf.Lines;
 			}
 
 			public override void ApplyState () {
 				base.ApplyState();
-				lines = wf.Lines;
 				size = wf.Size;
-				rot = wf.Rotation3D;
-				offset = wf.Offset;
-				fov = wf.FOV;
 				shader = wf.TextureShader;
-				colourInfo = Source.DrawColourInfo.Colour;
 			}
 
 			public override void Draw ( Action<TexturedVertex2D> vertexAction ) {
@@ -85,7 +76,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 				shader.Bind();
 
-				for ( int i = 0; i < wf.Lines.Count; i++ ) {
+				for ( int i = 0; i < lines.Count; i++ ) {
 					var line = lines[ i ];
 
 					var from = Project( line.From.Position );
@@ -95,7 +86,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 					to -= dif;
 					var perp = dif.PerpendicularLeft * width / 2;
 
-					DrawQuad( texture, new Quad( from + perp, from - perp, to + perp, to - perp ), colourInfo );
+					DrawQuad( texture, new Quad( from + perp, from - perp, to + perp, to - perp ), DrawColourInfo.Colour );
 				}
 
 				shader.Unbind();
@@ -103,11 +94,11 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			protected override bool CanDrawOpaqueInterior => false;
 
 			Vector2 Project ( Vector3 pos ) {
-				pos = ( rot * new Vector4( pos ) ).Xyz - offset;
+				pos = ( wf.Rotation3D * new Vector4( pos ) ).Xyz - wf.Offset;
 
 				return ToScreen( new Vector2(
-					size.X * ( 0.5f + MathF.Atan2( pos.X, pos.Z ) / ( fov.X / 180 * MathF.PI ) ), // NOTE this might break with anchor and origins, idk
-					size.Y * ( 0.5f + MathF.Atan2( pos.Y, pos.Z ) / ( fov.X / 180 * MathF.PI ) )
+					size.X * ( 0.5f + MathF.Atan2( pos.X, pos.Z ) / ( wf.FOV.X / 180 * MathF.PI ) ),
+					size.Y * ( 0.5f + MathF.Atan2( pos.Y, pos.Z ) / ( wf.FOV.X / 180 * MathF.PI ) )
 				) );
 			}
 

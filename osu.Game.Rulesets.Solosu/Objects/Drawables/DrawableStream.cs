@@ -49,6 +49,14 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			}
 		}
 
+		protected override void Update () {
+			var a = Lane.HeightAtTime( Clock.CurrentTime, HitObject.StartTime, Lane.LazerSpeed.Value );
+			var b = Lane.HeightAtTime( Clock.CurrentTime, HitObject.EndTime, Lane.LazerSpeed.Value );
+
+			Y = -(float)a;
+			Height = (float)( b - a );
+		}
+
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
 			if ( Judged ) return;
 
