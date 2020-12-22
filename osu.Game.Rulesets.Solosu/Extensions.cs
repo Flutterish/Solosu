@@ -44,6 +44,9 @@ namespace osu.Game.Rulesets.Solosu {
 
 		public static bool Empty<T> ( this IEnumerable<T> self )
 			=> !self.Any();
+
+		public static double LerpTo ( this double from, double to, double progress )
+			=> from + ( to - from ) * progress;
 	}
 
 	public static class Enum<T> where T : Enum {

@@ -43,26 +43,6 @@ namespace osu.Game.Rulesets.Solosu.UI {
 					this.TransformBindableTo( LazerSpeed, 1, 400 );
 				}
 			} );
-
-			ScrollDuration.BindValueChanged( v => {
-				foreach ( var i in HitObjectContainer.AliveObjects.OfType<DrawableSolosuHitObject>().Where( x => x.UsesPositionalAnimations ) ) {
-					i.ReapplyTransforms(); // NOTE might be quite eqpensive. would be nice if we just used a curve that follows y
-				}
-			} );
-		}
-
-		public void EmergeFromTheCube ( DrawableSolosuHitObject ho ) {
-			if ( !ho.UsesPositionalAnimations ) throw new InvalidOperationException( "Cannot apply positional animations to non positional hit objects" );
-			var timeAtCube = TimeAtHeight( CubeHeight, ho.HitObject.StartTime );
-
-			ho.MoveToX( -X );
-			ho.FadeOut();
-			ho.RotateTo( MathF.Atan2( -20, -X ) * 180 / MathF.PI + 90 );
-
-			using ( ho.BeginAbsoluteSequence( timeAtCube - 100 ) ) {
-				ho.Delay( 100 ).MoveToX( 0, 200, Easing.Out ).RotateTo( 0, 200 );
-				ho.FadeInFromZero( 500 );
-			}
 		}
 
 		public double TimeAtHeight ( double height, double hitTime, double speed = 1 )

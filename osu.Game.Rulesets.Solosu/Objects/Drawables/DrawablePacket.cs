@@ -11,6 +11,7 @@ using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Solosu.UI;
 using osuTK;
+using System;
 
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 	public class DrawablePacket : DrawableSolosuHitObject<Packet>, IKeyBindingHandler<SolosuAction> {
@@ -38,10 +39,27 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			}
 		}
 
-		protected override void UpdateInitialTransforms () {
-			Lane.EmergeFromTheCube( this );
+		protected override void Update () {
+			base.Update();
+			var cubeTime = Lane.TimeAtHeight( Lane.CubeHeight, HitObject.StartTime );
+
+			var timeToApply = Math.Clamp( Clock.CurrentTime, cubeTime - 100, cubeTime + 500 );
+			if ( timeToApply != lastAppliedPositionalTransformTime ) {
+				lastAppliedPositionalTransformTime = timeToApply;
+
+				var fadeInProgress = Math.Clamp( ( timeToApply - cubeTime + 100 ) / 500, 0, 1 );
+				var xAndRotateProgress = Math.Clamp( ( timeToApply - cubeTime ) / 200, 0, 1 );
+
+				Alpha = (float)fadeInProgress;
+				X = -(float)( Lane.X * ( 1 - xAndRotateProgress ) );
+				Rotation = (float)( Math.Atan2( -20, -Lane.X ) * 180 / Math.PI + 90 ).LerpTo( 0, xAndRotateProgress );
+			}
 		}
-		public override bool UsesPositionalAnimations => true;
+
+		protected double lastAppliedPositionalTransformTime { get; private set; }
+		protected override void UpdateInitialTransforms () {
+			lastAppliedPositionalTransformTime = TransformStartTime;
+		}
 
 		protected override void OnApply () {
 			base.OnApply();

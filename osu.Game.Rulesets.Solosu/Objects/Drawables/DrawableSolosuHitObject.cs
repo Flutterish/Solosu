@@ -45,8 +45,6 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 				UpdateHitStateTransforms( State.Value );
 			}
 		}
-
-		public virtual bool UsesPositionalAnimations => false;
 	}
 
 	public abstract class DrawableSolosuHitObject<T> : DrawableSolosuHitObject where T : SolosuHitObject {
