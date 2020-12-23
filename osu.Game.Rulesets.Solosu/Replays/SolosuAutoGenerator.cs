@@ -66,7 +66,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 			SolosuAction lastButton = SolosuAction.Button2;
 			double lastPressTime = 0;
 			void press ( double time, double duration = 0 ) {
-				lastButton = lastButton == SolosuAction.Button2 ? SolosuAction.Button1 : SolosuAction.Button2; // NOTE you could make these 2 buttons independant
+				lastButton = lastButton == SolosuAction.Button2 ? SolosuAction.Button1 : SolosuAction.Button2;
 
 				if ( time - lastPressTime >= KEY_UP_DELAY ) {
 					presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );

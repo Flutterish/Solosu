@@ -52,7 +52,7 @@ namespace osu.Game.Rulesets.Solosu {
 			new KeyBinding(InputKey.Right, SolosuAction.Right)
 		};
 
-		public override Drawable CreateIcon () => new SpriteText {
+		public override Drawable CreateIcon () => new SpriteText { // TODO icon
 			Anchor = Anchor.Centre,
 			Origin = Anchor.Centre,
 			Text = ShortName[ 0 ].ToString(),

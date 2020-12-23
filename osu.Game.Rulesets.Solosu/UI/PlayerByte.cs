@@ -89,7 +89,7 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 		}
 
 		private class BufferIndicator : Circle {
-			public BufferIndicator () {
+			public BufferIndicator () { // TODO these look too similar to the drawable judgements
 				Alpha = 0;
 			}
 			bool isVisible = false;
@@ -134,7 +134,7 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 				Origin = Anchor.Centre;
 				Anchor = Anchor.Centre;
 				AddInternal( new Sprite { Width = 500, Height = 2, Origin = Anchor.Centre, Anchor = Anchor.Centre, Texture = SolosuTextures.WidthFade( 500, 2 ), Alpha = 0.6f } );
-				// TODO maybe add the key being held effect ftom the key overlay when on the side
+				// TODO maybe add the key being held effect from the key overlay when on the side
 			}
 		}
 	}

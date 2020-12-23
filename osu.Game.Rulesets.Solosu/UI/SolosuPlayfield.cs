@@ -95,7 +95,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 				float sickoMode = 30 * amplitudes.Average * beat.RandomFloat( 0 );
 
 				cubeR.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // BUG can lock itself into kiai when rewinding
-				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // since these dont get cleared, this should be ignored when going bachwards and ignore new ones
+				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // since these dont get cleared, this should be ignored when going backwards and ignore new ones
 				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // before latest scheduled time
 			}
 
