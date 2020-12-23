@@ -102,13 +102,13 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			const double fadeDuration = 150;
 
 			if ( state == ArmedState.Hit ) {
-				main.FadeColour( ColourFor( Result.Type ), fillDuration );
+				main.FadeColour( Colours.ColourFor( Result.Type ), fillDuration );
 				FillTo( 1, fillDuration )
 					.Then().Delay( delayDuration )
 					.FadeOut( fadeDuration ).ScaleTo( 0.5f, fadeDuration );
 			}
 			else if ( state == ArmedState.Miss ) {
-				main.FadeColour( ColourFor( Result.Type ), fillDuration );
+				main.FadeColour( Colours.ColourFor( Result.Type ), fillDuration );
 				FillTo( 1, fillDuration )
 					.Then().Delay( delayDuration ).FadeOut( fadeDuration );
 				this.RotateTo( (float)HitObject.MissRotation, delayDuration + fillDuration + fadeDuration );

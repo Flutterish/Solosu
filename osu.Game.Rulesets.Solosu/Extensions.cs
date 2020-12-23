@@ -1,4 +1,6 @@
-﻿using osu.Game.Rulesets.Solosu.Objects;
+﻿using osu.Game.Beatmaps;
+using osu.Game.Rulesets.Solosu.Objects;
+using osuTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +49,11 @@ namespace osu.Game.Rulesets.Solosu {
 
 		public static double LerpTo ( this double from, double to, double progress )
 			=> from + ( to - from ) * progress;
+		public static Vector2 LerpTo ( this Vector2 from, Vector2 to, double progress )
+			=> from + ( to - from ) * (float)progress;
+
+		public static Random Random ( this IBeatmap beatmap )
+			=> new Random( (int)( beatmap.BeatmapInfo.Length + beatmap.BeatmapInfo.ID + beatmap.BeatmapInfo.AudioLeadIn * beatmap.BeatmapInfo.BeatDivisor / beatmap.BeatmapInfo.BPM ) );
 	}
 
 	public static class Enum<T> where T : Enum {

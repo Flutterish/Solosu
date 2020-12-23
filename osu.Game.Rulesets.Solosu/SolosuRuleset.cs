@@ -5,9 +5,11 @@ using osu.Game.Beatmaps;
 using osu.Game.Graphics;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Rulesets.Replays.Types;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Solosu.Beatmaps;
 using osu.Game.Rulesets.Solosu.Mods;
+using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Rulesets.Solosu.UI;
 using osu.Game.Rulesets.UI;
 using System;
@@ -25,6 +27,8 @@ namespace osu.Game.Rulesets.Solosu {
 		public override IBeatmapProcessor CreateBeatmapProcessor ( IBeatmap beatmap ) => new SolosuBeatmapProcessor( beatmap );
 
 		public override DifficultyCalculator CreateDifficultyCalculator ( WorkingBeatmap beatmap ) => new SolosuDifficultyCalculator( this, beatmap );
+		public override IConvertibleReplayFrame CreateConvertibleReplayFrame ()
+			=> new SolosuReplayFrame();
 
 		public override IEnumerable<Mod> GetModsFor ( ModType type ) {
 			switch ( type ) {

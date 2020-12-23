@@ -4,8 +4,6 @@ using osu.Framework.Graphics;
 using osu.Game.Rulesets.Solosu.Objects;
 using osu.Game.Rulesets.Solosu.Objects.Drawables;
 using osu.Game.Rulesets.UI;
-using System;
-using System.Linq;
 using static osu.Game.Rulesets.Solosu.UI.SolosuPlayfield;
 
 namespace osu.Game.Rulesets.Solosu.UI {

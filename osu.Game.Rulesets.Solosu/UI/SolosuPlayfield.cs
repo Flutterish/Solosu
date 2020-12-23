@@ -3,10 +3,14 @@ using osu.Framework.Audio.Track;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Pooling;
 using osu.Game.Beatmaps.ControlPoints;
+using osu.Game.Rulesets.Judgements;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Drawables;
+using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Solosu.Objects;
+using osu.Game.Rulesets.Solosu.Objects.Drawables;
 using osu.Game.Rulesets.UI;
 using osuTK;
 using System;
@@ -23,9 +27,14 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		private Wireframe cubeG;
 		private Wireframe cubeB;
 
+		Container<DrawableSolousJudgement> judgements;
+		DrawablePool<DrawableSolousJudgement> judgementPool;
+
 		public SolosuPlayfield () {
 			AddInternal( solosuColours = new() );
 			AddInternal( player );
+			AddInternal( judgements = new() { RelativeSizeAxes = Axes.Both, Anchor = Anchor.TopCentre, Origin = Anchor.TopCentre } );
+			AddInternal( judgementPool = new( 10 ) { RelativeSizeAxes = Axes.Both, Anchor = Anchor.TopCentre, Origin = Anchor.TopCentre } );
 			AddInternal( beat );
 			AddInternal( CubeContainer = new Container {
 				Origin = Anchor.TopCentre,
@@ -93,12 +102,12 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			KiaiBindable.Value = effectPoint.KiaiMode;
 		}
 
-		private void OnNewResult ( DrawableHitObject dho, Judgements.JudgementResult j ) {
-			if ( j.Type == Rulesets.Scoring.HitResult.Miss ) {
-
-			}
-			else {
+		private void OnNewResult ( DrawableHitObject dho, JudgementResult j ) {
+			if ( j.Type != HitResult.Miss ) {
 				CubeContainer.ScaleTo( MathF.Max( CubeContainer.Scale.X * 0.92f, 0.5f ), 50 ).Then().ScaleTo( 1, 100 );
+				if ( dho is DrawablePacket && j.Type is HitResult.Perfect or HitResult.Great ) {
+					judgements.Add( judgementPool.Get( d => d.Apply( dho as DrawableSolosuHitObject, j ) ) );
+				}
 			}
 		}
 

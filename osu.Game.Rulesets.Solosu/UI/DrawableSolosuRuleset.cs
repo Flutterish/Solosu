@@ -8,6 +8,7 @@ using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Solosu.Objects;
 using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Rulesets.UI;
+using osu.Game.Scoring;
 using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.UI {
@@ -19,5 +20,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		protected override ReplayInputHandler CreateReplayInputHandler ( Replay replay ) => new SolosuFramedReplayInputHandler( replay );
 		public override DrawableHitObject<SolosuHitObject> CreateDrawableRepresentation ( SolosuHitObject h ) => h.AsDrawable();
 		protected override PassThroughInputManager CreateInputManager () => new SolosuInputManager( Ruleset?.RulesetInfo );
+		protected override ReplayRecorder CreateReplayRecorder ( Score score )
+			=> new SolosuReplayRecorder( score );
 	}
 }

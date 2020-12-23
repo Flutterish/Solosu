@@ -26,13 +26,6 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			Y = -(float)Lane.HeightAtTime( Clock.CurrentTime, HitObject.StartTime );
 		}
 
-		protected virtual Colour4 ColourFor ( HitResult result ) {
-			if ( result == HitResult.Perfect ) return Colours.Perfect;
-			if ( result == HitResult.Great ) return Colours.Great;
-			if ( result == HitResult.Meh ) return Colours.Meh;
-			else return Colours.Miss;
-		}
-
 		public void ReapplyTransforms () {
 			ClearTransforms( true );
 			using ( BeginAbsoluteSequence( LifetimeStart ) ) {

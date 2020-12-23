@@ -10,7 +10,7 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 	public class SolosuBeatmapConverter : BeatmapConverter<SolosuHitObject> {
 		Random random;
 		public SolosuBeatmapConverter ( IBeatmap beatmap, Ruleset ruleset ) : base( beatmap, ruleset ) {
-			random = new Random( beatmap.BeatmapInfo.Hash.GetHashCode() );
+			random = beatmap.Random();
 		}
 
 		public override bool CanConvert () => true;
@@ -24,17 +24,6 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 					EndTime = dur.EndTime,
 					Lane = random.FromEnum<SolosuLane>()
 				};
-				//var lane = random.FromEnum<SolosuLane>();
-				//yield return new Packet {
-				//	Samples = original.Samples,
-				//	StartTime = original.StartTime,
-				//	Lane = lane
-				//};
-				//yield return new Packet {
-				//	Samples = original.Samples,
-				//	StartTime = dur.EndTime,
-				//	Lane = lane
-				//};
 			}
 			else {
 				yield return new Packet {
