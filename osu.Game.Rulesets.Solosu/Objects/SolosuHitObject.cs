@@ -9,12 +9,5 @@ namespace osu.Game.Rulesets.Solosu.Objects {
 		public virtual DrawableSolosuHitObject AsDrawable () => null;
 		public virtual void ApplyVisualRandom ( Random random ) { }
 		protected override HitWindows CreateHitWindows () => new SolosuHitWindows();
-		public SolosuLane Lane;
-	}
-
-	public enum SolosuLane {
-		Left,
-		Center,
-		Right
 	}
 }

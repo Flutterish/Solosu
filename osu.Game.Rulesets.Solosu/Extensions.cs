@@ -44,7 +44,7 @@ namespace osu.Game.Rulesets.Solosu {
 		public static bool IsAction ( this SolosuAction action )
 			=> action is SolosuAction.Button1 or SolosuAction.Button2;
 
-		public static bool Empty<T> ( this IEnumerable<T> self )
+		public static bool IsEmpty<T> ( this IEnumerable<T> self )
 			=> !self.Any();
 
 		public static double LerpTo ( this double from, double to, double progress )

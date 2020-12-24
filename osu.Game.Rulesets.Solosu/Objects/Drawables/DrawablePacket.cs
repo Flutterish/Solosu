@@ -14,7 +14,7 @@ using osuTK;
 using System;
 
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
-	public class DrawablePacket : DrawableSolosuHitObject<Packet>, IKeyBindingHandler<SolosuAction> {
+	public class DrawablePacket : DrawableLanedSolosuHitObject<Packet>, IKeyBindingHandler<SolosuAction> {
 		PacketVisual main;
 
 		public DrawablePacket () {
@@ -72,8 +72,6 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		}
 
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
-			if ( Judged ) return;
-
 			if ( HitWindows.CanBeHit( timeOffset ) ) {
 				var result = HitWindows.ResultFor( timeOffset );
 				if ( userTriggered && result != HitResult.None ) {

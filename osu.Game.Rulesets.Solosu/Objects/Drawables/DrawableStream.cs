@@ -8,9 +8,10 @@ using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Solosu.UI;
 using osuTK;
+using System;
 
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
-	public class DrawableStream : DrawableSolosuHitObject<Stream> {
+	public class DrawableStream : DrawableLanedSolosuHitObject<Stream> {
 		StreamVisual main;
 		StreamVisual r;
 		StreamVisual g;
@@ -54,17 +55,16 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			var b = Lane.HeightAtTime( Clock.CurrentTime, HitObject.EndTime, Lane.LazerSpeed.Value );
 
 			Y = -(float)a;
-			Height = (float)( b - a );
+			Height = MathF.Max( (float)( b - a ), 10 ); // imagine putting a 0 length hold in your map lmao couldnt be me
 		}
 
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
-			if ( Judged ) return;
-
-			if ( timeOffset >= 0 )
-				ApplyResult( j => j.Type = HitResult.Perfect );
-
-			if ( Player.Lane == HitObject.Lane && timeOffset + HitObject.Duration >= 0 )
-				ApplyResult( j => j.Type = HitResult.Miss );
+			if ( timeOffset + HitObject.Duration >= 0 ) {
+				if ( timeOffset >= 0 )
+					ApplyResult( j => j.Type = HitResult.Perfect );
+				else if ( Player.Lane == HitObject.Lane )
+					ApplyResult( j => j.Type = HitResult.Miss );
+			}
 		}
 
 		protected override void UpdateInitialTransforms () {
@@ -84,7 +84,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 				Anchor = Anchor.BottomCentre;
 				RelativeSizeAxes = Axes.Both;
 
-				AddInternal( new Box { RelativeSizeAxes = Axes.Both } );
+				AddInternal( new Circle { RelativeSizeAxes = Axes.Both } );
 			}
 		}
 	}

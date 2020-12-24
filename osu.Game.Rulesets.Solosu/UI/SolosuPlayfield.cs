@@ -27,8 +27,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		private Wireframe cubeG;
 		private Wireframe cubeB;
 
-		Container<DrawableSolousJudgement> judgements;
-		DrawablePool<DrawableSolousJudgement> judgementPool;
+		Container<DrawablePacketJudgement> judgements;
+		DrawablePool<DrawablePacketJudgement> judgementPool;
 
 		public SolosuPlayfield () {
 			AddInternal( solosuColours = new() );
@@ -91,12 +91,18 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public readonly BindableBool KiaiBindable = new( false );
 		private void OnBeat ( int beatIndex, TimingControlPoint timingPoint, EffectControlPoint effectPoint, ChannelAmplitudes amplitudes ) {
 			// thanks, hishi ;))))))
+			cubeR.FinishTransforms( true );
+			cubeG.FinishTransforms( true );
+			cubeB.FinishTransforms( true );
+			cubeR.ClearTransforms( true );
+			cubeG.ClearTransforms( true );
+			cubeB.ClearTransforms( true ); // these could lock themeselves into kiai without this when rewinding
 			if ( effectPoint.KiaiMode ) {
 				float sickoMode = 30 * amplitudes.Average * beat.RandomFloat( 0 );
 
-				cubeR.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // BUG can lock itself into kiai when rewinding
-				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // since these dont get cleared, this should be ignored when going backwards and ignore new ones
-				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 ); // before latest scheduled time
+				cubeR.MoveToOffset( beat.RandomVector( 0 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
+				cubeG.MoveToOffset( beat.RandomVector( 1 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
+				cubeB.MoveToOffset( beat.RandomVector( 2 ) * sickoMode, 50 ).Then().MoveTo( Vector2.Zero, 100 );
 			}
 
 			KiaiBindable.Value = effectPoint.KiaiMode;
@@ -105,8 +111,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		private void OnNewResult ( DrawableHitObject dho, JudgementResult j ) {
 			if ( j.Type != HitResult.Miss ) {
 				CubeContainer.ScaleTo( MathF.Max( CubeContainer.Scale.X * 0.92f, 0.5f ), 50 ).Then().ScaleTo( 1, 100 );
-				if ( dho is DrawablePacket && j.Type is HitResult.Perfect or HitResult.Great ) {
-					judgements.Add( judgementPool.Get( d => d.Apply( dho as DrawableSolosuHitObject, j ) ) );
+				if ( dho is DrawablePacket p && j.Type is HitResult.Perfect or HitResult.Great ) {
+					judgements.Add( judgementPool.Get( d => d.Apply( p, j ) ) );
 				}
 			}
 		}
@@ -126,8 +132,9 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public readonly SolosuColours solosuColours;
 
 		public override void Add ( HitObject hitObject ) {
-			var h = hitObject as SolosuHitObject;
-			Lanes[ h.Lane ].Add( h );
+			if ( hitObject is LanedSolosuHitObject lsho )
+				Lanes[ lsho.Lane ].Add( lsho );
+			else base.Add( hitObject );
 		}
 	}
 }

@@ -19,25 +19,6 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		[Resolved]
 		public PlayerByte Player { get; private set; }
 		public HitWindows HitWindows => HitObject.HitWindows;
-		[Resolved]
-		public Lane Lane { get; private set; }
-
-		protected override void Update () {
-			Y = -(float)Lane.HeightAtTime( Clock.CurrentTime, HitObject.StartTime );
-		}
-
-		public void ReapplyTransforms () {
-			ClearTransforms( true );
-			using ( BeginAbsoluteSequence( LifetimeStart ) ) {
-				UpdateInitialTransforms();
-			}
-			using ( BeginAbsoluteSequence( HitObject.StartTime ) ) {
-				UpdateStartTimeStateTransforms();
-			}
-			using ( BeginAbsoluteSequence( HitStateUpdateTime ) ) {
-				UpdateHitStateTransforms( State.Value );
-			}
-		}
 	}
 
 	public abstract class DrawableSolosuHitObject<T> : DrawableSolosuHitObject where T : SolosuHitObject {

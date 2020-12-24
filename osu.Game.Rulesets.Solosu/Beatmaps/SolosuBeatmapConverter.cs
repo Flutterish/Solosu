@@ -18,7 +18,7 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 		protected override IEnumerable<SolosuHitObject> ConvertHitObject ( HitObject original, IBeatmap beatmap, CancellationToken cancellationToken ) {
 			cancellationToken.ThrowIfCancellationRequested();
 			if ( original is IHasDuration dur ) {
-				yield return new Stream {
+				yield return new Stream { // TODO twin streams
 					Samples = original.Samples,
 					StartTime = original.StartTime,
 					EndTime = dur.EndTime,
@@ -31,7 +31,7 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 					StartTime = original.StartTime,
 					Lane = random.FromEnum<SolosuLane>()
 				};
-			}
+			} // TODO bonus. my idea is something like the hold notes in tau
 		}
 
 		protected override Beatmap<SolosuHitObject> CreateBeatmap ()

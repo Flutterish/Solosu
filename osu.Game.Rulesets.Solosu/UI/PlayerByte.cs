@@ -33,7 +33,7 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 		List<SolosuAction> held = new();
 		public bool OnPressed ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
-				moves.Add( action );
+				moves.Add( action ); // BUG these get added/removed in the wrong places when rewinding
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
@@ -51,7 +51,7 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 			}
 			else if ( action.IsAction() ) {
 				held.Remove( action );
-				if ( held.Empty() ) @byte.ScaleTo( 1, 50 );
+				if ( held.IsEmpty() ) @byte.ScaleTo( 1, 50 );
 			}
 		}
 
@@ -80,17 +80,18 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 		[BackgroundDependencyLoader]
 		private void load () {
 			foreach ( var i in lanes ) {
-				var indicator = new BufferIndicator { Size = new Vector2( 10 ), X = i.Value.X, Anchor = Anchor.Centre, Origin = Anchor.Centre, Colour = Colours.Perfect };
+				var indicator = new BufferIndicator { Size = new Vector2( 12 ), X = i.Value.X, Anchor = Anchor.Centre, Origin = Anchor.Centre, Colour = Colours.Perfect };
 				AddInternal( indicator );
 				bufferIndicators.Add( i.Key, indicator );
 			}
 			@byte.Colour = Colours.Perfect;
-			line.Colour = Colours.Miss;
+			line.Colour = Colours.Regular;
 		}
 
-		private class BufferIndicator : Circle {
-			public BufferIndicator () { // TODO these look too similar to the drawable judgements
+		private class BufferIndicator : SpriteIcon {
+			public BufferIndicator () {
 				Alpha = 0;
+				Icon = FontAwesome.Solid.Star;
 			}
 			bool isVisible = false;
 			public bool IsVisible {

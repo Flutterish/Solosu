@@ -1,6 +1,10 @@
-﻿using osu.Framework.Graphics;
+﻿using osu.Framework.Allocation;
+using osu.Framework.Graphics;
+using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.Textures;
 using osu.Framework.Input.Bindings;
+using osu.Framework.Platform;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
 using osu.Game.Rulesets.Difficulty;
@@ -14,6 +18,7 @@ using osu.Game.Rulesets.Solosu.UI;
 using osu.Game.Rulesets.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace osu.Game.Rulesets.Solosu {
 	public class SolosuRuleset : Ruleset {
@@ -52,12 +57,7 @@ namespace osu.Game.Rulesets.Solosu {
 			new KeyBinding(InputKey.Right, SolosuAction.Right)
 		};
 
-		public override Drawable CreateIcon () => new SpriteText { // TODO icon
-			Anchor = Anchor.Centre,
-			Origin = Anchor.Centre,
-			Text = ShortName[ 0 ].ToString(),
-			Font = OsuFont.Default.With( size: 18 )
-		};
+		public override Drawable CreateIcon () => new SolosuIcon( this );
 
 		private Dictionary<HitResult, string> results = new Dictionary<HitResult, string> {
 			[ HitResult.Perfect ] = "Perfect",
@@ -71,5 +71,24 @@ namespace osu.Game.Rulesets.Solosu {
 
 		public override string GetDisplayNameForHitResult ( HitResult result )
 			=> results[ result ];
+
+		private class SolosuIcon : Sprite {
+			private readonly Ruleset ruleset;
+			public SolosuIcon ( Ruleset ruleset ) {
+				this.ruleset = ruleset;
+				Size = new osuTK.Vector2( 40 );
+				FillMode = FillMode.Fit;
+				Origin = Anchor.Centre;
+				Anchor = Anchor.Centre;
+			}
+
+			[BackgroundDependencyLoader]
+			private void load ( TextureStore textures, GameHost host ) {
+				if ( !textures.GetAvailableResources().Contains( "Textures/Icon.png" ) )
+					textures.AddStore( host.CreateTextureLoaderStore( ruleset.CreateResourceStore() ) );
+
+				Texture = textures.Get( "Textures/Icon" );
+			}
+		}
 	}
 }

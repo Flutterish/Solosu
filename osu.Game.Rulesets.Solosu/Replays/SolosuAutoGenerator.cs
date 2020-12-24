@@ -65,39 +65,52 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 
 			SolosuAction lastButton = SolosuAction.Button2;
 			double lastPressTime = 0;
-			void press ( double time, double duration = 0 ) {
+			void press ( double time ) {
 				lastButton = lastButton == SolosuAction.Button2 ? SolosuAction.Button1 : SolosuAction.Button2;
 
 				if ( time - lastPressTime >= KEY_UP_DELAY ) {
 					presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
 				}
 				presses.Add( (time, lastButton.Yield()) );
-				lastPressTime = time + duration;
+				lastPressTime = time;
 			}
 
 			double previousTime = 0;
 			SolosuAction dodgeDirection = SolosuAction.Right;
 			foreach ( SolosuHitObject hitObject in Beatmap.HitObjects ) {
-				SolosuAction action = hitObject.Lane.GetAction();
+				if ( hitObject is LanedSolosuHitObject laned ) {
+					SolosuAction action = laned.Lane.GetAction();
 
-				if ( hitObject is Packet ) {
-					moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
-					press( hitObject.StartTime );
+					if ( hitObject is Packet ) {
+						if ( previousTime >= hitObject.StartTime ) { // for double taps in aspire-esque maps
+							moveTo( action, previousTime + 0.5 );    // TODO still needs work, GHOST bests it ( 1 OK, 1 corrupt )
+							press( previousTime + 1 );
 
-					previousTime = hitObject.StartTime;
-				}
-				else if ( hitObject is Stream s ) { // TODO double taps fuck the bot up
-					if ( held.GetLane() == s.Lane ) {
-						if ( action == SolosuAction.Center ) {
-							action = dodgeDirection;
-							dodgeDirection = dodgeDirection == SolosuAction.Right ? SolosuAction.Left : SolosuAction.Right;
+							previousTime = previousTime + 1;
 						}
-						else
-							action = SolosuAction.Center;
+						else {
+							moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
+							press( hitObject.StartTime );
 
-						moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
+							previousTime = hitObject.StartTime;
+						}
 					}
-					previousTime = s.EndTime;
+					else if ( hitObject is Stream s ) {
+						if ( held.GetLane() == s.Lane ) {
+							if ( buffered is not null && buffered != s.Lane.GetAction() ) {
+								action = buffered.Value;
+							}
+							else if ( action == SolosuAction.Center ) {
+								action = dodgeDirection;
+								dodgeDirection = dodgeDirection == SolosuAction.Right ? SolosuAction.Left : SolosuAction.Right;
+							}
+							else
+								action = SolosuAction.Center;
+
+							moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
+						}
+						previousTime = s.EndTime;
+					}
 				}
 			}
 

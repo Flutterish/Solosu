@@ -1,7 +1,7 @@
 ﻿using osu.Game.Rulesets.Objects.Types;
 
 namespace osu.Game.Rulesets.Solosu.Objects {
-	public class Stream : SolosuHitObject, IHasDuration {
+	public class Stream : LanedSolosuHitObject, IHasDuration {
 		public double EndTime { get; set; }
 
 		public double Duration {
