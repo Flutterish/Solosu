@@ -19,6 +19,11 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 		}
 
 		public override Replay Generate () {
+			DifficultyFlowPlayfield flow = new();
+			foreach ( var i in Beatmap.HitObjects.OfType<LanedSolosuHitObject>() ) {
+				flow.Add( i );
+			}
+
 			SolosuAction? buffered = null;
 			SolosuAction held = SolosuAction.Center;
 
@@ -75,54 +80,58 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 				lastPressTime = time;
 			}
 
-			double previousTime = 0;
-			SolosuAction dodgeDirection = SolosuAction.Right;
-			foreach ( SolosuHitObject hitObject in Beatmap.HitObjects ) {
-				if ( hitObject is LanedSolosuHitObject laned ) {
-					SolosuAction action = laned.Lane.GetAction();
+			var rng = Beatmap.Random();
+			double time = 0;
 
-					if ( hitObject is Packet ) {
-						if ( previousTime >= hitObject.StartTime ) { // for double taps in aspire-esque maps
-							moveTo( action, previousTime + 0.5 );    // TODO still needs work, GHOST bests it ( 1 OK, 1 corrupt )
-							press( previousTime + 1 );
+			while ( flow.AnyConcernsLeft( time, held.GetLane() ) ) {
+				var (type, list) = flow.NextConcern( time, held.GetLane() );
+				if ( type == FlowObjectType.Dangerous ) {
+					var safeLanes = Enum<SolosuLane>.Values.Except( list.Select( x => ( x.Source as LanedSolosuHitObject ).Lane ) );
 
-							previousTime = previousTime + 1;
-						}
-						else {
-							moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
-							press( hitObject.StartTime );
+					if ( safeLanes.Any() ) {
+						var latestPossibleTime = flow.LastSafeTimeAfter( time, held.GetLane() );
+						var lane = flow.GetChillestLane( latestPossibleTime );
+						var earliestPossibleTime = Math.Max( time, flow.FirstSafeTimeBefore( latestPossibleTime, lane ) );
 
-							previousTime = hitObject.StartTime;
-						}
+						time = ( earliestPossibleTime + latestPossibleTime ) / 2;
+						moveTo( lane.GetAction(), time );
 					}
-					else if ( hitObject is Stream s ) {
-						if ( held.GetLane() == s.Lane ) {
-							if ( buffered is not null && buffered != s.Lane.GetAction() ) {
-								action = buffered.Value;
-							}
-							else if ( action == SolosuAction.Center ) {
-								action = dodgeDirection;
-								dodgeDirection = dodgeDirection == SolosuAction.Right ? SolosuAction.Left : SolosuAction.Right;
-							}
-							else
-								action = SolosuAction.Center;
-
-							moveTo( action, ( previousTime + hitObject.StartTime ) / 2 );
+					else {
+						time = list.Where( x => ( x.Source as LanedSolosuHitObject ).Lane == held.GetLane() ).First().StartTime;
+					}
+				}
+				else if ( type == FlowObjectType.Intercept ) {
+					if ( list.Count() == 1 ) {
+						var intercept = list.Single().Source as LanedSolosuHitObject;
+						var safeTime = Math.Max( time, flow.FirstSafeTimeBefore( intercept.StartTime, intercept.Lane ) );
+						moveTo( intercept.Lane.GetAction(), ( safeTime + intercept.StartTime ) / 2 );
+						press( intercept.StartTime );
+						time = intercept.StartTime;
+					}
+					else {
+						var first = list.First().Source as LanedSolosuHitObject;
+						var safeTime = Math.Max( time, flow.FirstSafeTimeBefore( first.StartTime, first.Lane ) );
+						time = ( safeTime + list.First().StartTime ) / 2;
+						double offset = 0;
+						foreach ( var i in list ) {
+							moveTo( ( i.Source as LanedSolosuHitObject ).Lane.GetAction(), time );
+							press( time );
+							time = i.StartTime + ++offset;
 						}
-						previousTime = s.EndTime;
+						time = first.StartTime;
 					}
 				}
 			}
 
 			presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
-			movement.Add( (previousTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
+			movement.Add( (time + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
 
 			movement.Sort( ( x, y ) => x.time > y.time ? 1 : -1 );
 			presses.Sort( ( x, y ) => x.time > y.time ? 1 : -1 );
 
 			int movementIndex = 0;
 			int pressIndex = 0;
-			double time = -9999999;
+			time = -9999999;
 
 			IEnumerable<SolosuAction> currentMovement = Array.Empty<SolosuAction>();
 			IEnumerable<SolosuAction> currentPresses = Array.Empty<SolosuAction>();
