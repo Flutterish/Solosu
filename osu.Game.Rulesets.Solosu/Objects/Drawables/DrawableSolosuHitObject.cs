@@ -9,6 +9,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		public DrawableSolosuHitObject () : this( null ) { }
 		public DrawableSolosuHitObject ( SolosuHitObject hitObject ) : base( hitObject ) {
 			Anchor = Anchor.BottomCentre;
+			AlwaysPresent = true;
 		}
 		private SolosuInputManager inputManager;
 		protected SolosuInputManager InputManager => inputManager ??= ( GetContainingInputManager() as SolosuInputManager );

@@ -112,7 +112,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 				this.RotateTo( (float)HitObject.MissRotation, delayDuration + fillDuration + fadeDuration );
 			}
 
-			LifetimeEnd = TransformStartTime + fillDuration + delayDuration + fadeDuration;
+			LifetimeEnd = HitStateUpdateTime + fillDuration + delayDuration + fadeDuration;
 		}
 
 		private BindableDouble fillProgress = new( 0 );

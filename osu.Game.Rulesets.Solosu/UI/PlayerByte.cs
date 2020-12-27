@@ -5,6 +5,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Bindings;
+using osu.Game.Rulesets.Solosu.Collections;
 using osu.Game.Rulesets.Solosu.Objects;
 using osuTK;
 using System;
@@ -14,6 +15,8 @@ using System.Linq;
 namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an animation
 	public class PlayerByte : CompositeDrawable, IKeyBindingHandler<SolosuAction> {
 		List<SolosuAction> moves = new();
+		TimeSeekableList<InputState> allMoves = new(); // we need this because otherwise its impossible to tell what movement was buffered when rewinding ( you cant tell which index a move was removed from )
+
 		[Resolved]
 		Dictionary<SolosuLane, Lane> lanes { get; set; }
 		public SolosuLane Lane { get; private set; } = SolosuLane.Center;
@@ -28,12 +31,16 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 			AutoSizeAxes = Axes.Y;
 			Width = 500;
 			Masking = true;
+			allMoves.Add( double.NegativeInfinity, new InputState( moves ) );
 		}
 
 		List<SolosuAction> held = new();
 		public bool OnPressed ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
-				moves.Add( action ); // BUG these get added/removed in the wrong places when rewinding
+				if ( Time.Elapsed < 0 ) return false;
+
+				moves.Add( action );
+				allMoves.Add( Time.Current, new InputState( moves ) );
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
@@ -46,7 +53,10 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 
 		public void OnReleased ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
+				if ( Time.Elapsed < 0 ) return;
+
 				moves.Remove( action );
+				allMoves.Add( Time.Current, new InputState( moves ) );
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
@@ -72,6 +82,13 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 		}
 
 		protected override void Update () {
+			if ( Time.Elapsed < 0 ) {
+				allMoves.ClearAfter( Time.Current );
+				allMoves.At( Time.Current ).Restore( moves );
+				updatePosition();
+				FinishTransforms( true );
+			}
+
 			line.X = @byte.X / 4;
 		}
 
@@ -137,6 +154,37 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 				AddInternal( new Sprite { Width = 500, Height = 2, Origin = Anchor.Centre, Anchor = Anchor.Centre, Texture = SolosuTextures.WidthFade( 500, 2 ), Alpha = 0.6f } );
 				// TODO maybe add the key being held effect from the key overlay when on the side
 			}
+		}
+	}
+
+	public struct InputState {
+		public int LeftIndex;
+		public int RightIndex;
+		public int CenterIndex;
+
+		public InputState ( List<SolosuAction> actions ) {
+			LeftIndex = actions.IndexOf( SolosuAction.Left );
+			RightIndex = actions.IndexOf( SolosuAction.Right );
+			CenterIndex = actions.IndexOf( SolosuAction.Center );
+		}
+
+		public void Restore ( List<SolosuAction> actions ) {
+			actions.Clear();
+			if ( !tryAddIndex( 0, actions ) ) return;
+			if ( !tryAddIndex( 1, actions ) ) return;
+			if ( !tryAddIndex( 2, actions ) ) return;
+		}
+
+		private bool tryAddIndex ( int index, List<SolosuAction> actions ) {
+			if ( LeftIndex == index )
+				actions.Add( SolosuAction.Left );
+			else if ( RightIndex == index )
+				actions.Add( SolosuAction.Right );
+			else if ( CenterIndex == index )
+				actions.Add( SolosuAction.Center );
+			else return false;
+
+			return true;
 		}
 	}
 }

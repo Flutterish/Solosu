@@ -51,6 +51,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		}
 
 		protected override void Update () {
+			base.Update();
 			var a = Lane.HeightAtTime( Clock.CurrentTime, HitObject.StartTime, Lane.LazerSpeed.Value );
 			var b = Lane.HeightAtTime( Clock.CurrentTime, HitObject.EndTime, Lane.LazerSpeed.Value );
 
@@ -75,7 +76,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			const double fadeDuration = 400;
 			this.FadeOut( fadeDuration );
 
-			LifetimeEnd = TransformStartTime + fadeDuration;
+			LifetimeEnd = HitStateUpdateTime + fadeDuration;
 		}
 
 		private class StreamVisual : PoolableDrawable {

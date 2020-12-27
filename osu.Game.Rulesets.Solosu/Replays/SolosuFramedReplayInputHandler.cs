@@ -2,13 +2,12 @@
 using osu.Game.Replays;
 using osu.Game.Rulesets.Replays;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace osu.Game.Rulesets.Solosu.Replays {
 	public class SolosuFramedReplayInputHandler : FramedReplayInputHandler<SolosuReplayFrame> {
 		public SolosuFramedReplayInputHandler ( Replay replay ) : base( replay ) { }
 
-		protected override bool IsImportant ( SolosuReplayFrame frame ) => frame.Actions.Any();
+		protected override bool IsImportant ( SolosuReplayFrame frame ) => true;
 		public override void CollectPendingInputs ( List<IInput> inputs ) {
 			inputs.Add( new ReplayState<SolosuAction> {
 				PressedActions = CurrentFrame?.Actions ?? new List<SolosuAction>()

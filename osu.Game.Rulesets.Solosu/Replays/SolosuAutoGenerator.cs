@@ -133,6 +133,8 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 			int pressIndex = 0;
 			time = -9999999;
 
+			Frames.Add( new SolosuReplayFrame() { Time = 0 } );
+
 			IEnumerable<SolosuAction> currentMovement = Array.Empty<SolosuAction>();
 			IEnumerable<SolosuAction> currentPresses = Array.Empty<SolosuAction>();
 

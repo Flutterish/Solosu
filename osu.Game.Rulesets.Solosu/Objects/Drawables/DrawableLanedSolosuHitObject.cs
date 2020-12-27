@@ -7,6 +7,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		public Lane Lane { get; private set; }
 
 		protected override void Update () {
+			base.Update();
 			Y = -(float)Lane.HeightAtTime( Clock.CurrentTime, HitObject.StartTime );
 		}
 	}

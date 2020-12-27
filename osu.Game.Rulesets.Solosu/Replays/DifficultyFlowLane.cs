@@ -122,7 +122,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 			}
 
 			foreach ( var lane in lanes ) {
-				if ( !lane.Value.AnyDangersAfter( time ) ) return lane.Key;
+				if ( !lane.Value.AnyDangersAfterOrAt( time ) ) return lane.Key;
 				alignedIntercepts.Add( lane.Key, lane.Value.FirstDangerAfterOrAt( time ).StartTime );
 			}
 

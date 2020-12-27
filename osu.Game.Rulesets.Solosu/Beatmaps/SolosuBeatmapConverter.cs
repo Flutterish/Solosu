@@ -24,6 +24,13 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 					EndTime = dur.EndTime,
 					Lane = random.FromEnum<SolosuLane>()
 				};
+				if ( original.Kiai ) {
+					yield return new Stream { // TODO twin streams
+						StartTime = original.StartTime,
+						EndTime = dur.EndTime,
+						Lane = random.FromEnum<SolosuLane>()
+					};
+				}
 			}
 			else {
 				yield return new Packet {
