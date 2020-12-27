@@ -22,5 +22,8 @@ namespace osu.Game.Rulesets.Solosu.Collections {
 
 		public T At ( double time )
 			=> entries.Last( x => x.Time <= time ).Value;
+
+		public bool AnyAfter ( double time )
+			=> entries.Any() && entries.Last().Time > time;
 	}
 }

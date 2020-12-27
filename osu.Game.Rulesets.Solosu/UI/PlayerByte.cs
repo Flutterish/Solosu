@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using osu.Framework.Allocation;
+﻿using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
@@ -37,7 +36,14 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 		List<SolosuAction> held = new();
 		public bool OnPressed ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
-				if ( Time.Elapsed < 0 ) return false;
+				if ( allMoves.AnyAfter( Time.Current ) ) {
+					allMoves.ClearAfter( Time.Current );
+					allMoves.At( Time.Current ).Restore( moves );
+					updatePosition();
+					FinishTransforms( true );
+
+					return false;
+				}
 
 				moves.Add( action );
 				allMoves.Add( Time.Current, new InputState( moves ) );
@@ -53,7 +59,14 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 
 		public void OnReleased ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
-				if ( Time.Elapsed < 0 ) return;
+				if ( allMoves.AnyAfter( Time.Current ) ) {
+					allMoves.ClearAfter( Time.Current );
+					allMoves.At( Time.Current ).Restore( moves );
+					updatePosition();
+					FinishTransforms( true );
+
+					return;
+				}
 
 				moves.Remove( action );
 				allMoves.Add( Time.Current, new InputState( moves ) );
@@ -82,7 +95,7 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 		}
 
 		protected override void Update () {
-			if ( Time.Elapsed < 0 ) {
+			if ( allMoves.AnyAfter( Time.Current ) ) {
 				allMoves.ClearAfter( Time.Current );
 				allMoves.At( Time.Current ).Restore( moves );
 				updatePosition();

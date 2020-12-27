@@ -27,9 +27,17 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Resolved( name: nameof( SolosuPlayfield.HitHeight ) )]
 		public BindableDouble HitHeight { get; private set; }
 		[Resolved( name: nameof( SolosuPlayfield.KiaiBindable ) )]
-		public BindableBool KiaiBindable { get; private set; } // BUG when rewinding some transforms this triggers dont revert ( LazerSpeed )
+		public BindableBool KiaiBindable { get; private set; }
 
 		public readonly BindableDouble LazerSpeed = new( 1 );
+
+		protected override void Update () {
+			base.Update();
+			if ( Time.Elapsed < 0 ) {
+				FinishTransforms();
+				ClearTransformsAfter( Time.Current );
+			}
+		}
 
 		[BackgroundDependencyLoader]
 		private void load () {

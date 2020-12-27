@@ -81,22 +81,22 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		protected override void Update () {
+			base.Update();
 			cube.Rotation3D = Quaternion.FromAxisAngle( new Vector3( 0.3f, 1, 0 ), (float)Time.Current / 1000 );
 			cubeR.Rotation3D = Quaternion.FromAxisAngle( new Vector3( 0.3f, 1, 0 ), (float)Time.Current / 1000 );
 			cubeG.Rotation3D = Quaternion.FromAxisAngle( new Vector3( 0.3f, 1, 0 ), (float)Time.Current / 1000 );
 			cubeB.Rotation3D = Quaternion.FromAxisAngle( new Vector3( 0.3f, 1, 0 ), (float)Time.Current / 1000 );
+
+			if ( Time.Elapsed < 0 ) {
+				FinishTransforms();
+				ClearTransformsAfter( Time.Current );
+			}
 		}
 
 		[Cached( name: nameof( KiaiBindable ) )]
 		public readonly BindableBool KiaiBindable = new( false );
 		private void OnBeat ( int beatIndex, TimingControlPoint timingPoint, EffectControlPoint effectPoint, ChannelAmplitudes amplitudes ) {
 			// thanks, hishi ;))))))
-			cubeR.FinishTransforms( true );
-			cubeG.FinishTransforms( true );
-			cubeB.FinishTransforms( true );
-			cubeR.ClearTransforms( true );
-			cubeG.ClearTransforms( true );
-			cubeB.ClearTransforms( true ); // these could lock themeselves into kiai without this when rewinding
 			if ( effectPoint.KiaiMode ) {
 				float sickoMode = 30 * amplitudes.Average * beat.RandomFloat( 0 );
 
