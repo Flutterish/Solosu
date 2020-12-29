@@ -117,6 +117,9 @@ namespace osu.Game.Rulesets.Solosu.UI {
 					judgements.Add( judgementPool.Get( d => d.Apply( p, j ) ) );
 				}
 			}
+			else if ( dho is not DrawablePacket ) {
+				player.TakeDamage();
+			}
 		}
 
 		protected override HitObjectLifetimeEntry CreateLifetimeEntry ( HitObject hitObject ) => new SolosuLifetimeEntry( hitObject, ScrollDuration );

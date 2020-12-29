@@ -4,14 +4,16 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Bindings;
+using osu.Framework.Utils;
 using osu.Game.Rulesets.Solosu.Collections;
 using osu.Game.Rulesets.Solosu.Objects;
 using osuTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
-namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an animation
+namespace osu.Game.Rulesets.Solosu.UI {
 	public class PlayerByte : CompositeDrawable, IKeyBindingHandler<SolosuAction> {
 		List<SolosuAction> moves = new();
 		TimeSeekableList<InputState> allMoves = new(); // we need this because otherwise its impossible to tell what movement was buffered when rewinding ( you cant tell which index a move was removed from )
@@ -92,6 +94,11 @@ namespace osu.Game.Rulesets.Solosu.UI { // TODO when hit by laser, show an anima
 			foreach ( var i in bufferIndicators ) {
 				i.Value.IsVisible = moves.Contains( i.Key.GetAction() ) && moves.Last() != i.Key.GetAction();
 			}
+		}
+
+		public void TakeDamage () {
+			@byte.FlashColour( Colours.Miss, 500, Easing.Out );
+			@byte.RotateTo( RNG.NextSingle( -30, 30 ) ).Then().RotateTo( 0, 500, Easing.In );
 		}
 
 		protected override void Update () {
