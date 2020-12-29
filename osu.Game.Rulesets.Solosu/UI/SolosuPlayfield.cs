@@ -78,6 +78,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 					this.TransformBindableTo( ScrollDuration, 3000, 400 );
 				}
 			} );
+
+			RegisterPool<MultiLaneStream, DrawableMultiStream>( 2 );
 		}
 
 		protected override void Update () {

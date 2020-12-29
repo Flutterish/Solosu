@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace osu.Game.Rulesets.Solosu.Collections {
-	public class TimeSeekableList<T> {
+	public class TimeSeekableList<T> : IEnumerable<(double time, T value)> {
 		private struct TimeEntry {
 			public double Time;
 			public T Value;
@@ -25,5 +26,19 @@ namespace osu.Game.Rulesets.Solosu.Collections {
 
 		public bool AnyAfter ( double time )
 			=> entries.Any() && entries.Last().Time > time;
+
+		public IEnumerator<(double time, T value)> GetEnumerator ()
+			=> entries.Select( x => (x.Time, x.Value) ).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator ()
+			=> GetEnumerator();
+
+		public IEnumerable<(double startTime, double endTime, T value)> Ranges ( double endTime = double.PositiveInfinity ) {
+			var prev = entries.First();
+			foreach ( var i in entries.Skip( 1 ) ) {
+				yield return (prev.Time, i.Time, prev.Value);
+				prev = i;
+			}
+			yield return (prev.Time, endTime, prev.Value);
+		}
 	}
 }

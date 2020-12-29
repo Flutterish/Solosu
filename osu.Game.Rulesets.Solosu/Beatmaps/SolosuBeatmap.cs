@@ -19,6 +19,13 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 				Name = "Streams",
 				Content = streams.Count().ToString()
 			};
+
+			var multistreams = HitObjects.OfType<MultiLaneStream>();
+			if ( multistreams.Any() ) yield return new BeatmapStatistic {
+				CreateIcon = () => new BeatmapStatisticIcon( BeatmapStatisticsIconType.Spinners ),
+				Name = "Multi-Streams",
+				Content = multistreams.Count().ToString()
+			};
 		}
 	}
 }

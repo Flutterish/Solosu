@@ -8,19 +8,28 @@ using System.Threading;
 
 namespace osu.Game.Rulesets.Solosu.Beatmaps {
 	public class SolosuBeatmapConverter : BeatmapConverter<SolosuHitObject> {
-		Random random;
+		Random laneRandom;
+		Random bonusRandom;
 		public SolosuBeatmapConverter ( IBeatmap beatmap, Ruleset ruleset ) : base( beatmap, ruleset ) {
-			random = beatmap.Random();
+			laneRandom = beatmap.Random();
+			bonusRandom = beatmap.Random();
 		}
 
 		public override bool CanConvert () => true;
 
-		protected override IEnumerable<SolosuHitObject> ConvertHitObject ( HitObject original, IBeatmap beatmap, CancellationToken cancellationToken ) {
-			cancellationToken.ThrowIfCancellationRequested();
-			if ( original is IHasDuration dur ) {
+		protected override IEnumerable<SolosuHitObject> ConvertHitObject ( HitObject original, IBeatmap beatmap, CancellationToken cancellationToken ) { // currently lazer lets you only convert std beatmaps
+			cancellationToken.ThrowIfCancellationRequested(); // TODO aspire maps overlay packets on top of streams. do something to make that playable
+			if ( original is IHasDuration bonus and not ( IHasPath or IHasPathWithRepeats ) ) {
+				yield return new MultiLaneStream {
+					Samples = original.Samples,
+					StartTime = original.StartTime,
+					EndTime = bonus.EndTime
+				}.Randomize( bonusRandom, Beatmap.ControlPointInfo.TimingPointAt( original.StartTime ).BPM / 60 / 1000 );
+			}
+			else if ( original is IHasDuration dur ) {
 				if ( original.Kiai ) {
 					bool setSamples = true;
-					foreach ( var i in random.FromEnum<SolosuLane>( 2 ) ) {
+					foreach ( var i in laneRandom.FromEnum<SolosuLane>( 2 ) ) {
 						var str = new Stream {
 							StartTime = original.StartTime,
 							EndTime = dur.EndTime,
@@ -38,7 +47,7 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 						Samples = original.Samples,
 						StartTime = original.StartTime,
 						EndTime = dur.EndTime,
-						Lane = random.FromEnum<SolosuLane>()
+						Lane = laneRandom.FromEnum<SolosuLane>()
 					};
 				}
 			}
@@ -46,7 +55,7 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 				yield return new Packet {
 					Samples = original.Samples,
 					StartTime = original.StartTime,
-					Lane = random.FromEnum<SolosuLane>()
+					Lane = laneRandom.FromEnum<SolosuLane>()
 				};
 			} // TODO bonus. my idea is something like the hold notes in tau
 		}

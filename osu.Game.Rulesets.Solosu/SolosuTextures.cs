@@ -19,5 +19,10 @@ namespace osu.Game.Rulesets.Solosu {
 		}
 		public static Texture WidthFade ( int width, int height )
 			=> Generate( width, height, ( x, y ) => new Rgba32( 255, 255, 255, (byte)( 255 - MathF.Abs( 1 - 2f * x / width ) * 255 ) ) );
+
+		public static Texture FadeLeft ( int width, int height )
+			=> Generate( width, height, ( x, y ) => new Rgba32( 255, 255, 255, (byte)( 255 * ( width - x ) / width ) ) );
+
+		public static Texture CachedFadeLeft = FadeLeft( 100, 100 );
 	}
 }
