@@ -57,7 +57,7 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 					StartTime = original.StartTime,
 					Lane = laneRandom.FromEnum<SolosuLane>()
 				};
-			} // TODO bonus. my idea is something like the hold notes in tau
+			}
 		}
 
 		protected override Beatmap<SolosuHitObject> CreateBeatmap ()

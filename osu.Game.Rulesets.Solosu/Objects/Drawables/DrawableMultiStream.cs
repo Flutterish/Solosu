@@ -45,7 +45,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		}
 
 		protected override void UpdateInitialTransforms () {
-			this.FadeInFromZero( 500 );
+			this.FadeInFromZero( 100 );
 		}
 
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
@@ -59,10 +59,10 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 
 		protected override void UpdateHitStateTransforms ( ArmedState state ) {
 			if ( state == ArmedState.Hit ) {
-				this.FadeOutFromOne( 500 );
+				this.FadeOutFromOne( 400 );
 			}
 			else if ( state == ArmedState.Miss ) {
-				this.FadeOutFromOne( 500 );
+				this.FadeOutFromOne( 400 );
 			}
 		}
 

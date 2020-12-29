@@ -33,7 +33,7 @@ namespace osu.Game.Rulesets.Solosu {
 		public override IConvertibleReplayFrame CreateConvertibleReplayFrame ()
 			=> new SolosuReplayFrame();
 
-		public override IEnumerable<Mod> GetModsFor ( ModType type ) {
+		public override IEnumerable<Mod> GetModsFor ( ModType type ) { // TODO autoclick and automovement mod
 			switch ( type ) {
 				case ModType.Automation:
 					return new[] { new SolosuModAutoplay() };

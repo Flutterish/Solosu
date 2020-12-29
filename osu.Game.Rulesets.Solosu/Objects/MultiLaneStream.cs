@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace osu.Game.Rulesets.Solosu.Objects {
-	public class MultiLaneStream : SolosuHitObject, IHasDuration, IFlowObject {
+	public class MultiLaneStream : SolosuHitObject, IHasDuration, IFlowObject { // NOTE perhaps this should be in between 2 lanes and block movement between them so its unique from regular streams
 		public double EndTime { get; set; }
 
 		public double Duration {
