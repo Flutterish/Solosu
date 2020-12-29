@@ -36,12 +36,19 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 				prev = straight;
 			}
 		}
+		List<DrawableBonus> bonuses = new();
 		protected override void OnFree () {
 			base.OnFree();
 			foreach ( var i in parts ) {
 				RemoveInternal( i );
 			}
 			parts.Clear();
+			foreach ( var i in bonuses ) RemoveInternal( i );
+			bonuses.Clear();
+		}
+		protected override void AddNestedHitObject ( DrawableHitObject hitObject ) {
+			bonuses.Add( hitObject as DrawableBonus );
+			AddInternal( hitObject );
 		}
 
 		protected override void UpdateInitialTransforms () {

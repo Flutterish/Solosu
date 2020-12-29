@@ -5,18 +5,24 @@ using osu.Game.Input.Handlers;
 using osu.Game.Replays;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Objects.Drawables;
+using osu.Game.Rulesets.Solosu.Mods;
 using osu.Game.Rulesets.Solosu.Objects;
 using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Rulesets.UI;
 using osu.Game.Scoring;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace osu.Game.Rulesets.Solosu.UI {
 	[Cached]
 	public class DrawableSolosuRuleset : DrawableRuleset<SolosuHitObject> {
 		public DrawableSolosuRuleset ( SolosuRuleset ruleset, IBeatmap beatmap, IReadOnlyList<Mod> mods = null ) : base( ruleset, beatmap, mods ) { }
 
-		protected override Playfield CreatePlayfield () => new SolosuPlayfield();
+		protected override Playfield CreatePlayfield () {
+			var playfield = new SolosuPlayfield() { IsAutopilotEnabled = Mods.OfType<SolosuModAutopilot>().Any(), IsRelaxEnabled = Mods.OfType<SolosuModRelax>().Any() };
+			playfield.replay.replay = new SolosuAutoGenerator( Beatmap ).Generate();
+			return playfield;
+		}
 		protected override ReplayInputHandler CreateReplayInputHandler ( Replay replay ) => new SolosuFramedReplayInputHandler( replay );
 		public override DrawableHitObject<SolosuHitObject> CreateDrawableRepresentation ( SolosuHitObject h ) => h.AsDrawable();
 		protected override PassThroughInputManager CreateInputManager () => new SolosuInputManager( Ruleset?.RulesetInfo );

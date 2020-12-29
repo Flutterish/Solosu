@@ -36,7 +36,7 @@ namespace osu.Game.Rulesets.Solosu {
 		public override IEnumerable<Mod> GetModsFor ( ModType type ) { // TODO autoclick and automovement mod
 			switch ( type ) {
 				case ModType.Automation:
-					return new[] { new SolosuModAutoplay() };
+					return new Mod[] { new SolosuModAutoplay(), new SolosuModRelax(), new SolosuModAutopilot() };
 
 				case ModType.DifficultyReduction:
 					return new[] { new SolosuModNoFail() };

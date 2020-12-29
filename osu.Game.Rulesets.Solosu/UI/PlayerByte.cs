@@ -1,4 +1,5 @@
 ﻿using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
@@ -7,11 +8,11 @@ using osu.Framework.Input.Bindings;
 using osu.Framework.Utils;
 using osu.Game.Rulesets.Solosu.Collections;
 using osu.Game.Rulesets.Solosu.Objects;
+using osu.Game.Rulesets.Solosu.Replays;
 using osuTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 
 namespace osu.Game.Rulesets.Solosu.UI {
 	public class PlayerByte : CompositeDrawable, IKeyBindingHandler<SolosuAction> {
@@ -21,6 +22,13 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Resolved]
 		Dictionary<SolosuLane, Lane> lanes { get; set; }
 		public SolosuLane Lane { get; private set; } = SolosuLane.Center;
+
+		[Resolved( name: nameof( SolosuPlayfield.RelaxBindable ) )]
+		BindableBool RelaxBindable { get; set; }
+		[Resolved( name: nameof( SolosuPlayfield.AutopilotBindable ) )]
+		BindableBool AutopilotBindable { get; set; }
+		[Resolved]
+		ActualReplay replay { get; set; }
 
 		PlayerVisual @byte;
 		PlayerLine line;
@@ -40,13 +48,15 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public bool OnPressed ( SolosuAction action ) {
 			allHeld.Add( action );
 			if ( action.IsMovement() ) {
+				if ( AutopilotBindable.Value ) return false;
+
 				if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
 					allMoves.ClearAfter( Clock.CurrentTime );
 					allMoves.At( Clock.CurrentTime ).Restore( moves );
 					moves.RemoveAll( x => !allHeld.Contains( x ) );
 					updatePosition();
 					FinishTransforms( true );
-				
+
 					return false;
 				}
 
@@ -55,6 +65,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
+				if ( RelaxBindable.Value ) return false;
+
 				held.Add( action );
 				@byte.ScaleTo( 0.8f, 20 );
 			}
@@ -65,13 +77,15 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public void OnReleased ( SolosuAction action ) {
 			allHeld.Remove( action );
 			if ( action.IsMovement() ) {
+				if ( AutopilotBindable.Value ) return;
+
 				if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
 					allMoves.ClearAfter( Clock.CurrentTime );
 					allMoves.At( Clock.CurrentTime ).Restore( moves );
 					moves.RemoveAll( x => !allHeld.Contains( x ) );
 					updatePosition();
 					FinishTransforms( true );
-				
+
 					return;
 				}
 
@@ -80,6 +94,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
+				if ( RelaxBindable.Value ) return;
+
 				held.Remove( action );
 				if ( held.IsEmpty() ) @byte.ScaleTo( 1, 50 );
 			}
@@ -107,7 +123,34 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		protected override void Update () {
-			if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
+			if ( AutopilotBindable.Value || RelaxBindable.Value ) {
+				SolosuReplayFrame frame;
+				while ( ( frame = replay.FrameAt( Clock.CurrentTime ) ) is not null ) {
+					if ( RelaxBindable.Value ) held.Clear();
+
+					foreach ( var action in Enum<SolosuAction>.Values ) {
+						if ( action.IsMovement() && AutopilotBindable.Value ) {
+							if ( frame.Actions.Contains( action ) && !moves.Contains( action ) ) {
+								moves.Add( action );
+							}
+							else if ( !frame.Actions.Contains( action ) && moves.Contains( action ) ) {
+								moves.Remove( action );
+							}
+						}
+						else if ( action.IsAction() && RelaxBindable.Value && frame.Actions.Contains( action ) ) {
+							held.Add( action );
+						}
+					}
+
+					if ( RelaxBindable.Value ) {
+						if ( held.IsEmpty() ) @byte.ScaleTo( 1, 50 );
+						else @byte.ScaleTo( 0.8f, 20 ); // TODO do this better
+					}
+					updatePosition();
+				}
+			}
+
+			if ( !AutopilotBindable.Value && allMoves.AnyAfter( Clock.CurrentTime ) ) {
 				allMoves.ClearAfter( Clock.CurrentTime );
 				allMoves.At( Clock.CurrentTime ).Restore( moves );
 				moves.RemoveAll( x => !allHeld.Contains( x ) );

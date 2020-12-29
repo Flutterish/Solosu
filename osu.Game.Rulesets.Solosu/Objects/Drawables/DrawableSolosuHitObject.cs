@@ -1,4 +1,5 @@
 ﻿using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
@@ -22,6 +23,8 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		public PlayerByte Player { get; private set; }
 		[Resolved]
 		public Dictionary<SolosuLane, Lane> Lanes { get; private set; }
+		[Resolved( name: nameof( SolosuPlayfield.RelaxBindable ) )]
+		public BindableBool RelaxBindable { get; private set; }
 		public HitWindows HitWindows => HitObject.HitWindows;
 	}
 

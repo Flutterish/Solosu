@@ -11,6 +11,7 @@ using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Solosu.Objects;
 using osu.Game.Rulesets.Solosu.Objects.Drawables;
+using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Rulesets.UI;
 using osuTK;
 using System;
@@ -29,6 +30,23 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 		Container<DrawablePacketJudgement> judgements;
 		DrawablePool<DrawablePacketJudgement> judgementPool;
+
+		[Cached( name: nameof( RelaxBindable ) )]
+		public readonly BindableBool RelaxBindable = new( false );
+		[Cached( name: nameof( AutopilotBindable ) )]
+		public readonly BindableBool AutopilotBindable = new( false );
+		[Cached]
+		public readonly ActualReplay replay = new();
+
+		public bool IsRelaxEnabled {
+			get => RelaxBindable.Value;
+			set => RelaxBindable.Value = value;
+		}
+
+		public bool IsAutopilotEnabled {
+			get => AutopilotBindable.Value;
+			set => AutopilotBindable.Value = value;
+		}
 
 		public SolosuPlayfield () {
 			AddInternal( solosuColours = new() );
@@ -72,14 +90,15 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			NewResult += OnNewResult;
 			KiaiBindable.BindValueChanged( v => {
 				if ( v.NewValue ) {
-					this.TransformBindableTo( ScrollDuration, 2000, 400 );
+					this.TransformBindableTo( ScrollDuration, 3000 / KIAI_SPEEDUP / SCROLL_MULTIPLIER, 400 );
 				}
 				else {
-					this.TransformBindableTo( ScrollDuration, 3000, 400 );
+					this.TransformBindableTo( ScrollDuration, 3000 / SCROLL_MULTIPLIER, 400 );
 				}
 			} );
 
 			RegisterPool<MultiLaneStream, DrawableMultiStream>( 2 );
+			RegisterPool<Bonus, DrawableBonus>( 30 );
 		}
 
 		protected override void Update () {
@@ -111,6 +130,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		private void OnNewResult ( DrawableHitObject dho, JudgementResult j ) {
+			if ( j.Type is HitResult.SmallBonus or HitResult.LargeBonus ) return;
+
 			if ( j.Type != HitResult.Miss ) {
 				CubeContainer.ScaleTo( MathF.Max( CubeContainer.Scale.X * 0.92f, 0.5f ), 50 ).Then().ScaleTo( 1, 100 );
 				if ( dho is DrawablePacket p && j.Type is HitResult.Perfect or HitResult.Great ) {
@@ -126,7 +147,9 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Cached]
 		BeatDetector beat = new BeatDetector();
 		[Cached( name: nameof( ScrollDuration ) )]
-		public readonly BindableDouble ScrollDuration = new( 3000 );
+		public readonly BindableDouble ScrollDuration = new( 3000 / SCROLL_MULTIPLIER );
+		public const double SCROLL_MULTIPLIER = 1.6;
+		public const double KIAI_SPEEDUP = 4.0 / 3.0;
 		public const double SCROLL_HEIGHT = 900;
 		[Cached( name: nameof( HitHeight ) )]
 		public readonly BindableDouble HitHeight = new( 160 );

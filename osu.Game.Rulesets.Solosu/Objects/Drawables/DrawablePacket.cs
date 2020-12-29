@@ -48,7 +48,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 				lastAppliedPositionalTransformTime = timeToApply;
 
 				var fadeInProgress = Math.Clamp( ( timeToApply - cubeTime + 100 ) / 500, 0, 1 );
-				var xAndRotateProgress = Math.Clamp( ( timeToApply - cubeTime ) / 200, 0, 1 );
+				var xAndRotateProgress = Math.Clamp( ( timeToApply - cubeTime ) / ( 200 / SolosuPlayfield.SCROLL_MULTIPLIER ), 0, 1 );
 
 				Alpha = (float)fadeInProgress;
 				X = -(float)( Lane.X * ( 1 - xAndRotateProgress ) );
@@ -74,7 +74,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
 			if ( HitWindows.CanBeHit( timeOffset ) ) {
 				var result = HitWindows.ResultFor( timeOffset );
-				if ( userTriggered && result != HitResult.None ) {
+				if ( Player.Lane == HitObject.Lane && ( userTriggered || ( RelaxBindable.Value && timeOffset >= 0 ) ) && result != HitResult.None ) {
 					ApplyResult( r => r.Type = result );
 				}
 			}

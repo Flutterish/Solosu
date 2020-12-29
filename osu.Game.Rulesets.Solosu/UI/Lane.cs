@@ -19,6 +19,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 			RegisterPool<Packet, DrawablePacket>( 20 );
 			RegisterPool<Stream, DrawableStream>( 5 );
+			RegisterPool<Bonus, DrawableBonus>( 30 );
 		}
 
 

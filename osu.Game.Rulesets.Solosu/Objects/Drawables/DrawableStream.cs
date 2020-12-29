@@ -9,6 +9,7 @@ using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Solosu.UI;
 using osuTK;
 using System;
+using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 	public class DrawableStream : DrawableLanedSolosuHitObject<Stream> {
@@ -30,6 +31,16 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		protected override void OnApply () {
 			Alpha = 0;
 			main.Colour = Colours.Miss;
+		}
+		List<DrawableBonus> bonuses = new();
+		protected override void OnFree () {
+			base.OnFree();
+			foreach ( var i in bonuses ) RemoveInternal( i );
+			bonuses.Clear();
+		}
+		protected override void AddNestedHitObject ( DrawableHitObject hitObject ) {
+			bonuses.Add( hitObject as DrawableBonus );
+			AddInternal( hitObject );
 		}
 
 		BeatDetector beat;
