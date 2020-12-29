@@ -1,5 +1,4 @@
-﻿using osu.Framework.Extensions.TypeExtensions;
-using osu.Game.Rulesets.Solosu.Objects;
+﻿using osu.Game.Rulesets.Solosu.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +10,14 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 		public void Clear ()
 			=> flowObjects.Clear();
 
-		public void Add ( SolosuHitObject ho ) {
-			if ( ho is Packet p ) {
-				flowObjects.Add( new FlowObject( p.StartTime, p.StartTime, FlowObjectType.Intercept ) { Source = ho } );
-			}
-			else if ( ho is Stream s ) {
-				flowObjects.Add( new FlowObject( s.StartTime, s.EndTime, FlowObjectType.Dangerous ) { Source = ho } );
-			}
-			else throw new InvalidOperationException( $"{nameof( DifficultyFlowLane )} does not recognize the type {ho?.GetType().ReadableName()}" );
+		public void Add ( FlowObject fo ) {
+			flowObjects.Add( fo );
+
+			flowObjects.Sort( ( a, b ) => Math.Sign( a.StartTime - b.StartTime ) );
+		}
+
+		public void AddRange ( IEnumerable<FlowObject> fo ) {
+			flowObjects.AddRange( fo );
 
 			flowObjects.Sort( ( a, b ) => Math.Sign( a.StartTime - b.StartTime ) );
 		}
@@ -54,18 +53,21 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 		}
 	}
 
-	public struct FlowObject {
+	public struct FlowObject : IHasLane {
 		public double StartTime;
 		public double EndTime;
 		public FlowObjectType Type;
 		public SolosuHitObject Source;
 
-		public FlowObject ( double startTime, double endTime, FlowObjectType type ) {
+		public FlowObject ( double startTime, double endTime, FlowObjectType type, SolosuLane lane ) {
 			StartTime = startTime;
 			EndTime = endTime;
 			Type = type;
 			Source = null;
+			Lane = lane;
 		}
+
+		public SolosuLane Lane { get; set; }
 	}
 
 	public enum FlowObjectType {
@@ -85,8 +87,15 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 			foreach ( var i in lanes ) i.Value.Clear();
 		}
 
-		public void Add ( LanedSolosuHitObject lho ) {
-			lanes[ lho.Lane ].Add( lho );
+		public void Add ( IFlowObject lho ) {
+			if ( lho is IHasLane laned ) {
+				lanes[ laned.Lane ].AddRange( lho.CreateFlowObjects().Mutate( ( ref FlowObject x ) => x.Lane = laned.Lane ) );
+			}
+			else {
+				foreach ( var i in lho.CreateFlowObjects() ) {
+					lanes[ i.Lane ].Add( i );
+				}
+			}
 		}
 
 		public bool AnyConcernsLeft ( double time, SolosuLane currentLane )
@@ -138,5 +147,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 			=> lanes[ lane ].AnyDangersBeforeOrAt( time ) ? Math.Min( lanes[ lane ].LastDangerBeforeOrAt( time ).EndTime, time ) : 0;
 		public double LastSafeTimeAfter ( double time, SolosuLane lane )
 			=> lanes[ lane ].AnyDangersAfter( time ) ? Math.Max( lanes[ lane ].FirstDangerAfter( time ).StartTime, time ) : double.PositiveInfinity;
+		public bool AnyDangerAfterOrAt ( double time, SolosuLane lane )
+			=> lanes[ lane ].AnyDangersAfterOrAt( time );
 	}
 }

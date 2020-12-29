@@ -12,8 +12,20 @@ namespace osu.Game.Rulesets.Solosu {
 			var array = collection.ToArray();
 			return array[ random.Next( 0, array.Length ) ];
 		}
+		public static T[] From<T> ( this Random random, IEnumerable<T> collection, int count ) {
+			var array = collection.ToList();
+			T[] result = new T[ count ];
+			for ( ; count > 0; count-- ) {
+				int index = random.Next( array.Count );
+				result[ count - 1 ] = array[ index ];
+				array.RemoveAt( index );
+			}
+			return result;
+		}
 		public static T FromEnum<T> ( this Random random ) where T : Enum
 			=> random.From( Enum<T>.Values );
+		public static T[] FromEnum<T> ( this Random random, int count ) where T : Enum
+			=> random.From( Enum<T>.Values, count );
 
 		public static double Range ( this Random random, double min, double max )
 			=> min + ( max - min ) * random.NextDouble();
@@ -54,6 +66,11 @@ namespace osu.Game.Rulesets.Solosu {
 
 		public static Random Random ( this IBeatmap beatmap )
 			=> new Random( (int)( beatmap.BeatmapInfo.Length + beatmap.BeatmapInfo.ID + beatmap.BeatmapInfo.AudioLeadIn * beatmap.BeatmapInfo.BeatDivisor / beatmap.BeatmapInfo.BPM ) );
+
+		public delegate void Mutator<T> ( ref T value );
+		public static IEnumerable<T> Mutate<T> ( this IEnumerable<T> self, Mutator<T> mutator ) {
+			return self.Select( x => { mutator( ref x ); return x; } );
+		}
 	}
 
 	public static class Enum<T> where T : Enum {

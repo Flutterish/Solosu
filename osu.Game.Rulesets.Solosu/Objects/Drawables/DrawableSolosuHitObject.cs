@@ -3,6 +3,7 @@ using osu.Framework.Graphics;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Solosu.UI;
+using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 	public abstract class DrawableSolosuHitObject : DrawableHitObject<SolosuHitObject> {
@@ -13,12 +14,14 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		}
 		private SolosuInputManager inputManager;
 		protected SolosuInputManager InputManager => inputManager ??= ( GetContainingInputManager() as SolosuInputManager );
-		protected override double InitialLifetimeOffset => 3000; // TODO this might need to be set on test scenes
+		protected override double InitialLifetimeOffset => 3000;
 
 		[Resolved]
 		public SolosuColours Colours { get; private set; }
 		[Resolved]
 		public PlayerByte Player { get; private set; }
+		[Resolved]
+		public Dictionary<SolosuLane, Lane> Lanes { get; private set; }
 		public HitWindows HitWindows => HitObject.HitWindows;
 	}
 

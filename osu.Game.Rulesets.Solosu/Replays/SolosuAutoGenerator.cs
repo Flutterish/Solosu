@@ -20,7 +20,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 
 		public override Replay Generate () {
 			DifficultyFlowPlayfield flow = new();
-			foreach ( var i in Beatmap.HitObjects.OfType<LanedSolosuHitObject>() ) {
+			foreach ( var i in Beatmap.HitObjects.OfType<IFlowObject>() ) {
 				flow.Add( i );
 			}
 
@@ -124,7 +124,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 			}
 
 			presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
-			movement.Add( (time + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
+			if ( !flow.AnyDangerAfterOrAt( time, SolosuLane.Center ) ) movement.Add( (time + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
 
 			movement.Sort( ( x, y ) => x.time > y.time ? 1 : -1 );
 			presses.Sort( ( x, y ) => x.time > y.time ? 1 : -1 );

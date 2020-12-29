@@ -1,10 +1,8 @@
-﻿using osu.Framework.Allocation;
-using osu.Game.Rulesets.Solosu.UI;
+﻿using osu.Game.Rulesets.Solosu.UI;
 
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
-	public class DrawableLanedSolosuHitObject<T> : DrawableSolosuHitObject<T> where T : SolosuHitObject {
-		[Resolved]
-		public Lane Lane { get; private set; }
+	public class DrawableLanedSolosuHitObject<T> : DrawableSolosuHitObject<T> where T : LanedSolosuHitObject {
+		public Lane Lane => Lanes[ HitObject.Lane ];
 
 		protected override void Update () {
 			base.Update();

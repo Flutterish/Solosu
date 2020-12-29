@@ -18,14 +18,24 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 		protected override IEnumerable<SolosuHitObject> ConvertHitObject ( HitObject original, IBeatmap beatmap, CancellationToken cancellationToken ) {
 			cancellationToken.ThrowIfCancellationRequested();
 			if ( original is IHasDuration dur ) {
-				yield return new Stream { // TODO twin streams
-					Samples = original.Samples,
-					StartTime = original.StartTime,
-					EndTime = dur.EndTime,
-					Lane = random.FromEnum<SolosuLane>()
-				};
 				if ( original.Kiai ) {
-					yield return new Stream { // TODO twin streams
+					bool setSamples = true;
+					foreach ( var i in random.FromEnum<SolosuLane>( 2 ) ) {
+						var str = new Stream {
+							StartTime = original.StartTime,
+							EndTime = dur.EndTime,
+							Lane = i
+						};
+						if ( setSamples ) {
+							setSamples = false;
+							str.Samples = original.Samples;
+						}
+						yield return str;
+					}
+				}
+				else {
+					yield return new Stream {
+						Samples = original.Samples,
 						StartTime = original.StartTime,
 						EndTime = dur.EndTime,
 						Lane = random.FromEnum<SolosuLane>()

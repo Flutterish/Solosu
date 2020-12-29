@@ -7,6 +7,6 @@ namespace osu.Game.Rulesets.Solosu.Objects {
 		public SolosuLifetimeEntry ( HitObject hitObject, BindableDouble scrollDuration ) : base( hitObject ) {
 			this.scrollDuration = scrollDuration;
 		}
-		protected override double InitialLifetimeOffset => scrollDuration.Value;
+		protected override double InitialLifetimeOffset => scrollDuration?.Value ?? 3000; // NOTE this doesnt take into account scroll speeds
 	}
 }
