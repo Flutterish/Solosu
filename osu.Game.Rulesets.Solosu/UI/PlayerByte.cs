@@ -16,7 +16,7 @@ using System.Net;
 namespace osu.Game.Rulesets.Solosu.UI {
 	public class PlayerByte : CompositeDrawable, IKeyBindingHandler<SolosuAction> {
 		List<SolosuAction> moves = new();
-		TimeSeekableList<InputState> allMoves = new(); // we need this because otherwise its impossible to tell what movement was buffered when rewinding ( you cant tell which index a move was removed from )
+		// TimeSeekableList<InputState> allMoves = new(); // we need this because otherwise its impossible to tell what movement was buffered when rewinding ( you cant tell which index a move was removed from )
 
 		[Resolved]
 		Dictionary<SolosuLane, Lane> lanes { get; set; }
@@ -32,23 +32,23 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			AutoSizeAxes = Axes.Y;
 			Width = 500;
 			Masking = true;
-			allMoves.Add( double.NegativeInfinity, new InputState( moves ) );
+			// allMoves.Add( double.NegativeInfinity, new InputState( moves ) );
 		}
 
 		List<SolosuAction> held = new();
 		public bool OnPressed ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
-				if ( allMoves.AnyAfter( Time.Current ) ) {
-					allMoves.ClearAfter( Time.Current );
-					allMoves.At( Time.Current ).Restore( moves );
-					updatePosition();
-					FinishTransforms( true );
-
-					return false;
-				}
+				//if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
+				//	allMoves.ClearAfter( Clock.CurrentTime );
+				//	allMoves.At( Clock.CurrentTime ).Restore( moves );
+				//	updatePosition();
+				//	FinishTransforms( true );
+				//
+				//	return false;
+				//}
 
 				moves.Add( action );
-				allMoves.Add( Time.Current, new InputState( moves ) );
+				//allMoves.Add( Clock.CurrentTime, new InputState( moves ) );
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
@@ -61,17 +61,17 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 		public void OnReleased ( SolosuAction action ) {
 			if ( action.IsMovement() ) {
-				if ( allMoves.AnyAfter( Time.Current ) ) {
-					allMoves.ClearAfter( Time.Current );
-					allMoves.At( Time.Current ).Restore( moves );
-					updatePosition();
-					FinishTransforms( true );
-
-					return;
-				}
+				//if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
+				//	allMoves.ClearAfter( Clock.CurrentTime );
+				//	allMoves.At( Clock.CurrentTime ).Restore( moves );
+				//	updatePosition();
+				//	FinishTransforms( true );
+				//
+				//	return;
+				//}
 
 				moves.Remove( action );
-				allMoves.Add( Time.Current, new InputState( moves ) );
+				//allMoves.Add( Clock.CurrentTime, new InputState( moves ) );
 				updatePosition();
 			}
 			else if ( action.IsAction() ) {
@@ -102,12 +102,12 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		protected override void Update () {
-			if ( allMoves.AnyAfter( Time.Current ) ) {
-				allMoves.ClearAfter( Time.Current );
-				allMoves.At( Time.Current ).Restore( moves );
-				updatePosition();
-				FinishTransforms( true );
-			}
+			//if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
+			//	allMoves.ClearAfter( Clock.CurrentTime );
+			//	allMoves.At( Clock.CurrentTime ).Restore( moves );
+			//	updatePosition();
+			//	FinishTransforms( true );
+			//}
 
 			line.X = @byte.X / 4;
 		}
