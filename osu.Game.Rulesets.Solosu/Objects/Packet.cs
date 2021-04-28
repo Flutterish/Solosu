@@ -7,11 +7,10 @@ namespace osu.Game.Rulesets.Solosu.Objects {
 	public class Packet : LanedSolosuHitObject, IFlowObject {
 		public Vector2 Offset;
 		public double MissRotation;
-		public LeftRight PieceDirection;
 
 		public override void ApplyVisualRandom ( Random random ) {
+			base.ApplyVisualRandom( random );
 			MissRotation = random.Chance( 0.5 ) ? random.Range( 50, 80 ) : random.Range( -50, -80 );
-			PieceDirection = random.Chance( 0.5 ) ? LeftRight.Left : LeftRight.Right;
 		}
 
 		public IEnumerable<FlowObject> CreateFlowObjects () {

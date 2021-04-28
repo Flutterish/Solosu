@@ -5,7 +5,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Transforms;
-using osu.Framework.Input.Bindings;
 using osu.Game.Beatmaps.ControlPoints;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;
@@ -14,7 +13,7 @@ using osuTK;
 using System;
 
 namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
-	public class DrawablePacket : DrawableLanedSolosuHitObject<Packet>, IKeyBindingHandler<SolosuAction> {
+	public class DrawablePacket : DrawableLanedSolosuHitObject<Packet> {
 		PacketVisual main;
 
 		public DrawablePacket () {
@@ -69,30 +68,23 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 
 			fillProgress.Value = 0;
 			Scale = Vector2.One;
+			lastValidOffset = null;
 		}
 
+		double? lastValidOffset;
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
-			if ( HitWindows.CanBeHit( timeOffset ) ) {
-				var result = HitWindows.ResultFor( timeOffset );
-				if ( Player.Lane == HitObject.Lane && ( userTriggered || ( RelaxBindable.Value && timeOffset >= 0 ) ) && result != HitResult.None ) {
-					ApplyResult( r => r.Type = result );
-				}
+			if ( lastValidOffset is null || Math.Abs( timeOffset ) <= Math.Abs( lastValidOffset.Value ) ) { // can get better result
+				if ( Player.Lane == HitObject.Lane && HitWindows.ResultFor( timeOffset ) != HitResult.None ) lastValidOffset = timeOffset;
 			}
 			else {
+				var result = HitWindows.ResultFor( lastValidOffset.Value );
+				ApplyResult( r => r.Type = result );
+			}
+
+			if ( !HitWindows.CanBeHit( timeOffset ) ) {
 				ApplyResult( r => r.Type = HitResult.Miss );
 			}
 		}
-		public bool OnPressed ( SolosuAction action ) {
-			if ( !action.IsAction() ) return false;
-
-			if ( Judged ) return false;
-			if ( Player.Lane == HitObject.Lane ) {
-				UpdateResult( true );
-				return true;
-			}
-			return false;
-		}
-		public void OnReleased ( SolosuAction action ) { }
 
 		protected override void UpdateHitStateTransforms ( ArmedState state ) {
 			const double fillDuration = 150;

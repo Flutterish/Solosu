@@ -10,6 +10,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public readonly Colour4 Regular = Colour4.Cyan;
 
 		public Colour4 ColourFor ( HitResult result ) {
+			if ( result == HitResult.IgnoreHit ) return Perfect;
 			if ( result == HitResult.Perfect ) return Perfect;
 			if ( result == HitResult.Great ) return Great;
 			if ( result == HitResult.Meh ) return Meh;

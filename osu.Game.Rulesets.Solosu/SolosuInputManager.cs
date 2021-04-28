@@ -8,16 +8,13 @@ namespace osu.Game.Rulesets.Solosu {
 	}
 
 	public enum SolosuAction {
-		[Description( "Button 1" )]
-		Button1,
-
-		[Description( "Button 2" )]
-		Button2,
+		[Description( "Hard Beat" )]
+		HardBeat,
 
 		[Description( "Left" )]
 		Left,
 
-		[Description( "Center" )] // this is for elastic input
+		[Description( "Center" )] // this is for buffered input
 		Center,
 
 		[Description( "Right" )]

@@ -31,6 +31,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		protected override void OnApply () {
 			Alpha = 0;
 			main.Colour = Colours.Miss;
+			damageTime = 0;
 		}
 		List<DrawableBonus> bonuses = new();
 		protected override void OnFree () {
@@ -70,12 +71,23 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			Height = MathF.Max( (float)( b - a ), 10 ); // imagine putting a 0 length hold in your map lmao couldnt be me
 		}
 
+		double damageTime;
 		protected override void CheckForResult ( bool userTriggered, double timeOffset ) {
 			if ( timeOffset + HitObject.Duration >= 0 ) {
 				if ( timeOffset >= 0 )
-					ApplyResult( j => j.Type = HitResult.Perfect );
-				else if ( Player.Lane == HitObject.Lane )
-					ApplyResult( j => j.Type = HitResult.Miss );
+					if ( damageTime > HitObject.Duration * 0.1 )
+						ApplyResult( j => j.Type = HitResult.Miss );
+					else if ( damageTime > HitObject.Duration * 0.05 )
+						ApplyResult( j => j.Type = HitResult.Ok );
+					else if ( damageTime > 0 )
+						ApplyResult( j => j.Type = HitResult.Great );
+					else
+						ApplyResult( j => j.Type = HitResult.Perfect );
+				else if ( Player.Lane == HitObject.Lane ) {
+					damageTime += Time.Elapsed;
+					if ( damageTime > HitObject.Duration * 0.1 )
+						ApplyResult( j => j.Type = HitResult.Miss );
+				}
 			}
 		}
 

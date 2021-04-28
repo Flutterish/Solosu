@@ -14,6 +14,9 @@ using osu.Game.Rulesets.Solosu.Mods;
 using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Rulesets.Solosu.UI;
 using osu.Game.Rulesets.UI;
+using osu.Game.Scoring;
+using osu.Game.Screens.Ranking.Statistics;
+using osuTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +39,7 @@ namespace osu.Game.Rulesets.Solosu {
 		public override IEnumerable<Mod> GetModsFor ( ModType type ) { // TODO autoclick and automovement mod
 			switch ( type ) {
 				case ModType.Automation:
-					return new Mod[] { new SolosuModAutoplay(), new SolosuModRelax(), new SolosuModAutopilot() };
+					return new Mod[] { new SolosuModAutoplay() };
 
 				case ModType.DifficultyReduction:
 					return new[] { new SolosuModNoFail() };
@@ -48,8 +51,6 @@ namespace osu.Game.Rulesets.Solosu {
 
 
 		public override IEnumerable<KeyBinding> GetDefaultKeyBindings ( int variant = 0 ) => new[] {
-			new KeyBinding(InputKey.Z, SolosuAction.Button1),
-			new KeyBinding(InputKey.X, SolosuAction.Button2),
 			new KeyBinding(InputKey.Left, SolosuAction.Left),
 			new KeyBinding(InputKey.Up, SolosuAction.Center),
 			new KeyBinding(InputKey.Right, SolosuAction.Right)
@@ -70,6 +71,11 @@ namespace osu.Game.Rulesets.Solosu {
 		public override string GetDisplayNameForHitResult ( HitResult result )
 			=> results[ result ];
 
+		public override StatisticRow[] CreateStatisticsForScore ( ScoreInfo score, IBeatmap playableBeatmap ) => new StatisticRow[]
+		{
+
+		};
+
 		private class SolosuIcon : Sprite {
 			private readonly Ruleset ruleset;
 			public SolosuIcon ( Ruleset ruleset ) {
@@ -85,7 +91,7 @@ namespace osu.Game.Rulesets.Solosu {
 				if ( !textures.GetAvailableResources().Contains( "Textures/Icon.png" ) )
 					textures.AddStore( host.CreateTextureLoaderStore( ruleset.CreateResourceStore() ) );
 
-				Texture = textures.Get( "Textures/Icon" );
+				Texture = textures.Get( "Textures/SolosuIcon" );
 			}
 		}
 	}

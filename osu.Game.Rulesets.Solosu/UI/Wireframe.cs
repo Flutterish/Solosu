@@ -98,7 +98,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 				return ToScreen( new Vector2(
 					size.X * ( 0.5f + MathF.Atan2( pos.X, pos.Z ) / ( wf.FOV.X / 180 * MathF.PI ) ),
-					size.Y * ( 0.5f + MathF.Atan2( pos.Y, pos.Z ) / ( wf.FOV.X / 180 * MathF.PI ) )
+					size.Y * ( 0.5f + MathF.Atan2( pos.Y, pos.Z ) / ( wf.FOV.Y / 180 * MathF.PI ) )
 				) );
 			}
 

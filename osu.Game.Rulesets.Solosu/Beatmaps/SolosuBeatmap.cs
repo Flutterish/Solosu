@@ -26,6 +26,13 @@ namespace osu.Game.Rulesets.Solosu.Beatmaps {
 				Name = "Multi-Streams",
 				Content = multistreams.Count().ToString()
 			};
+
+			var hardBeats = HitObjects.OfType<HardBeat>();
+			if ( hardBeats.Any() ) yield return new BeatmapStatistic {
+				CreateIcon = () => new BeatmapStatisticIcon( BeatmapStatisticsIconType.Circles ),
+				Name = "Hard Beats",
+				Content = hardBeats.Count().ToString()
+			};
 		}
 	}
 }

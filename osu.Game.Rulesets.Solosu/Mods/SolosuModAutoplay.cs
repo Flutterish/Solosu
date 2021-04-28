@@ -5,10 +5,11 @@ using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Scoring;
 using osu.Game.Users;
 using System;
+using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.Mods {
 	public class SolosuModAutoplay : ModAutoplay<SolosuHitObject> {
-		public override Score CreateReplayScore ( IBeatmap beatmap ) => new Score {
+		public override Score CreateReplayScore ( IBeatmap beatmap, IReadOnlyList<Mod> mods ) => new Score {
 			ScoreInfo = new ScoreInfo {
 				User = new User { Username = "Autosu" },
 			},
@@ -16,6 +17,5 @@ namespace osu.Game.Rulesets.Solosu.Mods {
 		};
 
 		public override string Description => "Let the cute bot do... wait, where did he go?";
-		public override Type[] IncompatibleMods => new[] { typeof( ModRelax ), typeof( SolosuModAutopilot ) };
 	}
 }

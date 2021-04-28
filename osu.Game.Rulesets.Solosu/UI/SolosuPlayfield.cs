@@ -38,6 +38,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Cached]
 		public readonly ActualReplay replay = new();
 
+		// these are here because it was already implemented, so if we ever add tapping back it will be useful
 		public bool IsRelaxEnabled {
 			get => RelaxBindable.Value;
 			set => RelaxBindable.Value = value;
@@ -99,6 +100,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 			RegisterPool<MultiLaneStream, DrawableMultiStream>( 2 );
 			RegisterPool<Bonus, DrawableBonus>( 30 );
+			RegisterPool<HardBeat, DrawableHardBeat>( 4 );
 		}
 
 		protected override void Update () {
@@ -130,12 +132,29 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		private void OnNewResult ( DrawableHitObject dho, JudgementResult j ) {
-			if ( j.Type is HitResult.SmallBonus or HitResult.LargeBonus ) return;
+			DrawableSolosuHitObject dsho = dho as DrawableSolosuHitObject;
 
-			if ( j.Type != HitResult.Miss ) {
+			if ( j.Type is HitResult.SmallTickHit ) {
+				
+			}
+			else if ( dsho is DrawableHardBeat ) {
+				// TODO burst here?
+			}
+			else if ( j.Type != HitResult.Miss ) {
 				CubeContainer.ScaleTo( MathF.Max( CubeContainer.Scale.X * 0.92f, 0.5f ), 50 ).Then().ScaleTo( 1, 100 );
-				if ( dho is DrawablePacket p && j.Type is HitResult.Perfect or HitResult.Great ) {
-					judgements.Add( judgementPool.Get( d => d.Apply( p, j ) ) );
+				if ( dho is DrawablePacket ) {
+					judgements.Add( judgementPool.Get( d => {
+						d.Apply( dsho, j );
+						d.Scale = new Vector2( 1 );
+					} ) );
+
+					player.@byte.ScaleTo( 0.8f, 20 ).Then().ScaleTo( 1, 50 );
+				}
+				else if ( dho is DrawableStream or DrawableMultiStream ) {
+					judgements.Add( judgementPool.Get( d => {
+						d.Apply( dsho, j );
+						d.Scale = new Vector2( 1.1f );
+					} ) );
 				}
 			}
 			else if ( dho is not DrawablePacket ) {

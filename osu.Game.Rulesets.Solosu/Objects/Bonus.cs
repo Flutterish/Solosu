@@ -8,6 +8,6 @@ namespace osu.Game.Rulesets.Solosu.Objects {
 	}
 
 	public class BonusJudgement : Judgement {
-		public override HitResult MaxResult => HitResult.SmallBonus;
+		public override HitResult MaxResult => HitResult.SmallTickHit;
 	}
 }

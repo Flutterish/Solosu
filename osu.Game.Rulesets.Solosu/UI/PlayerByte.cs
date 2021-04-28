@@ -30,7 +30,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[Resolved]
 		ActualReplay replay { get; set; }
 
-		PlayerVisual @byte;
+		public PlayerVisual @byte;
 		PlayerLine line;
 		Dictionary<SolosuLane, BufferIndicator> bufferIndicators = new();
 		public PlayerByte () {
@@ -195,7 +195,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 			}
 		}
 
-		private class PlayerVisual : CompositeDrawable {
+		public class PlayerVisual : CompositeDrawable {
 			Box box;
 			public PlayerVisual () {
 				AddInternal( box = new Box { Size = new Vector2( MathF.Sqrt( volume ) ), Origin = Anchor.Centre, Anchor = Anchor.Centre } );

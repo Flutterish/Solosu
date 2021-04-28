@@ -19,7 +19,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		public DrawableSolosuRuleset ( SolosuRuleset ruleset, IBeatmap beatmap, IReadOnlyList<Mod> mods = null ) : base( ruleset, beatmap, mods ) { }
 
 		protected override Playfield CreatePlayfield () {
-			var playfield = new SolosuPlayfield() { IsAutopilotEnabled = Mods.OfType<SolosuModAutopilot>().Any(), IsRelaxEnabled = Mods.OfType<SolosuModRelax>().Any() };
+			var playfield = new SolosuPlayfield();
 			playfield.replay.replay = new SolosuAutoGenerator( Beatmap ).Generate();
 			return playfield;
 		}

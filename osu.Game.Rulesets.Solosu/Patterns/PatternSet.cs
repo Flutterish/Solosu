@@ -5,8 +5,9 @@ namespace osu.Game.Rulesets.Solosu.Patterns {
 		public List<Pattern> Patterns = new List<Pattern> {
 			"ABBA",
 			"A(AA)!",
-			"(ABAC)+",
-			"(AB)+"
+			"(ABAC)+", // stairs
+			"(AB)+",   // 2 lane castle
+			"(ABCB)+"  // 3 lane castle
 		};
 	}
 }

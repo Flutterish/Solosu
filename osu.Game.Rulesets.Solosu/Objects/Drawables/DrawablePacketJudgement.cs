@@ -15,7 +15,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		[Resolved]
 		SolosuColours colours { get; set; }
 
-		DrawablePacket dho;
+		DrawableSolosuHitObject dho;
 		JudgementResult judgement;
 
 		[Resolved]
@@ -40,7 +40,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 			this.MoveTo( new Vector2( 0, 150 / 2 + 70 ), 200, Easing.In ).Delay( 100 ).FadeOut( 100 ).Then().Expire();
 		}
 
-		public void Apply ( DrawablePacket dho, JudgementResult judgement ) {
+		public void Apply ( DrawableSolosuHitObject dho, JudgementResult judgement ) {
 			this.dho = dho;
 			this.judgement = judgement;
 		}

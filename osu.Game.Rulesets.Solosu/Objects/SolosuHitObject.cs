@@ -7,7 +7,11 @@ using System;
 namespace osu.Game.Rulesets.Solosu.Objects {
 	public abstract class SolosuHitObject : HitObject {
 		public virtual DrawableSolosuHitObject AsDrawable () => null;
-		public virtual void ApplyVisualRandom ( Random random ) { }
+		public LeftRight PieceDirection;
+
+		public virtual void ApplyVisualRandom ( Random random ) {
+			PieceDirection = random.Chance( 0.5 ) ? LeftRight.Left : LeftRight.Right;
+		}
 		protected override HitWindows CreateHitWindows () => new SolosuHitWindows();
 	}
 }

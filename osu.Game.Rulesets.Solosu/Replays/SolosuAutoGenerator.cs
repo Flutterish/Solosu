@@ -68,15 +68,15 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 				}
 			}
 
-			SolosuAction lastButton = SolosuAction.Button2;
 			double lastPressTime = 0;
 			void press ( double time ) {
-				lastButton = lastButton == SolosuAction.Button2 ? SolosuAction.Button1 : SolosuAction.Button2;
-
-				if ( time - lastPressTime >= KEY_UP_DELAY ) {
+				if ( time - lastPressTime > KEY_UP_DELAY ) {
 					presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );
 				}
-				presses.Add( (time, lastButton.Yield()) );
+				else {
+					presses.Add( (( lastPressTime + time ) / 2, Array.Empty<SolosuAction>()) );
+				}
+				presses.Add( (time, SolosuAction.HardBeat.Yield()) );
 				lastPressTime = time;
 			}
 
@@ -105,7 +105,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 						var intercept = list.Single().Source as LanedSolosuHitObject;
 						var safeTime = Math.Max( time, flow.FirstSafeTimeBefore( intercept.StartTime, intercept.Lane ) );
 						moveTo( intercept.Lane.GetAction(), ( safeTime + intercept.StartTime ) / 2 );
-						press( intercept.StartTime );
+						//press( intercept.StartTime );
 						time = intercept.StartTime;
 					}
 					else {
@@ -115,12 +115,16 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 						double offset = 0;
 						foreach ( var i in list ) {
 							moveTo( ( i.Source as LanedSolosuHitObject ).Lane.GetAction(), time );
-							press( time );
+							//press( time );
 							time = i.StartTime + ++offset;
 						}
 						time = first.StartTime;
 					}
 				}
+			}
+
+			foreach ( var i in Beatmap.HitObjects.OfType<HardBeat>() ) {
+				press( i.StartTime );
 			}
 
 			presses.Add( (lastPressTime + KEY_UP_DELAY, Array.Empty<SolosuAction>()) );

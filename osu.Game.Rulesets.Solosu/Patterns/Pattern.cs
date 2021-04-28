@@ -4,7 +4,8 @@
 		/// <summary>
 		/// Patterns are noted as follows:
 		/// `A`, `B`, `C` are any distinct directions.
-		/// `L`, `R`, `C` are left, right center respectively.
+		/// `L`, `R`, `C` are left, right, center respectively.
+		/// `_` is a gap.
 		/// `(ABC)` is a group. It does nothing by itself, but allows more complex behaviours.
 		/// `[ABC]` is an intercept group. It places an intecept at that position. This is the default group.
 		/// `{ABC}` is a danger group. It places a danger at that position.
@@ -14,6 +15,7 @@
 		/// `(ABC)xN-K` makes a group repeat between N and K times.
 		/// `(ABC)+` makes a group repeat one or more times.
 		/// `(ABC)?+` makes a group repeat zero or more times.
+		/// `(ABC)xN+` makes a group repeat at least N times.
 		/// `(ABC)!` makes a group faster. Stackable.
 		/// `(ABC)#` makes a group slower. Stackable.
 		/// It is not possible to place a `[]`, `{}` or `&lt;&gt;` group around any notes with already defined behaviours.
