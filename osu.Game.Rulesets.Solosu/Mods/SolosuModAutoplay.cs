@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.Mods {
-	public class SolosuModAutoplay : ModAutoplay<SolosuHitObject> {
+	public class SolosuModAutoplay : ModAutoplay {
 		public override Score CreateReplayScore ( IBeatmap beatmap, IReadOnlyList<Mod> mods ) => new Score {
 			ScoreInfo = new ScoreInfo {
 				User = new User { Username = "Autosu" },

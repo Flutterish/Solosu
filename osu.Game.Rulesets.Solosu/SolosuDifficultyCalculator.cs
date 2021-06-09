@@ -19,7 +19,7 @@ namespace osu.Game.Rulesets.Solosu {
 
 		protected override IEnumerable<DifficultyHitObject> CreateDifficultyHitObjects ( IBeatmap beatmap, double clockRate ) => Enumerable.Empty<DifficultyHitObject>();
 
-		protected override Skill[] CreateSkills ( IBeatmap beatmap, Mod[] mods )
+		protected override Skill[] CreateSkills ( IBeatmap beatmap, Mod[] mods, double clockRate )
 			=> new Skill[ 0 ];
 	}
 }
