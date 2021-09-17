@@ -16,7 +16,6 @@ using osu.Game.Rulesets.Solosu.UI;
 using osu.Game.Rulesets.UI;
 using osu.Game.Scoring;
 using osu.Game.Screens.Ranking.Statistics;
-using osuTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;

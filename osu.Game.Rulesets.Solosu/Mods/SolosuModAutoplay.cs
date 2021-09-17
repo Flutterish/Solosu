@@ -1,10 +1,8 @@
 ﻿using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Mods;
-using osu.Game.Rulesets.Solosu.Objects;
 using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Scoring;
 using osu.Game.Users;
-using System;
 using System.Collections.Generic;
 
 namespace osu.Game.Rulesets.Solosu.Mods {

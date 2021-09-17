@@ -1,6 +1,5 @@
 ﻿using osu.Framework.Graphics;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input.Bindings;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Rulesets.Scoring;

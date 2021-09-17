@@ -5,6 +5,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Bindings;
+using osu.Framework.Input.Events;
 using osu.Framework.Utils;
 using osu.Game.Rulesets.Solosu.Collections;
 using osu.Game.Rulesets.Solosu.Objects;
@@ -45,9 +46,9 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 		List<SolosuAction> held = new();
 		List<SolosuAction> allHeld = new();
-		public bool OnPressed ( SolosuAction action ) {
-			allHeld.Add( action );
-			if ( action.IsMovement() ) {
+		public bool OnPressed ( KeyBindingPressEvent<SolosuAction> action ) {
+			allHeld.Add( action.Action );
+			if ( action.Action.IsMovement() ) {
 				if ( AutopilotBindable.Value ) return false;
 
 				if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
@@ -60,23 +61,23 @@ namespace osu.Game.Rulesets.Solosu.UI {
 					return false;
 				}
 
-				moves.Add( action );
+				moves.Add( action.Action );
 				allMoves.Add( Clock.CurrentTime, new InputState( moves ) );
 				updatePosition();
 			}
-			else if ( action.IsAction() ) {
+			else if ( action.Action.IsAction() ) {
 				if ( RelaxBindable.Value ) return false;
 
-				held.Add( action );
+				held.Add( action.Action );
 				@byte.ScaleTo( 0.8f, 20 );
 			}
 
 			return false;
 		}
 
-		public void OnReleased ( SolosuAction action ) {
-			allHeld.Remove( action );
-			if ( action.IsMovement() ) {
+		public void OnReleased ( KeyBindingReleaseEvent<SolosuAction> action ) {
+			allHeld.Remove( action.Action );
+			if ( action.Action.IsMovement() ) {
 				if ( AutopilotBindable.Value ) return;
 
 				if ( allMoves.AnyAfter( Clock.CurrentTime ) ) {
@@ -89,14 +90,14 @@ namespace osu.Game.Rulesets.Solosu.UI {
 					return;
 				}
 
-				moves.Remove( action );
+				moves.Remove( action.Action );
 				allMoves.Add( Clock.CurrentTime, new InputState( moves ) );
 				updatePosition();
 			}
-			else if ( action.IsAction() ) {
+			else if ( action.Action.IsAction() ) {
 				if ( RelaxBindable.Value ) return;
 
-				held.Remove( action );
+				held.Remove( action.Action );
 				if ( held.IsEmpty() ) @byte.ScaleTo( 1, 50 );
 			}
 		}

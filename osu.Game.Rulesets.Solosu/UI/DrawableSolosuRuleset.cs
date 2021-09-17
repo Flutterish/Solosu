@@ -5,13 +5,11 @@ using osu.Game.Input.Handlers;
 using osu.Game.Replays;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Objects.Drawables;
-using osu.Game.Rulesets.Solosu.Mods;
 using osu.Game.Rulesets.Solosu.Objects;
 using osu.Game.Rulesets.Solosu.Replays;
 using osu.Game.Rulesets.UI;
 using osu.Game.Scoring;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace osu.Game.Rulesets.Solosu.UI {
 	[Cached]
