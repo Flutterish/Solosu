@@ -9,12 +9,12 @@ using System.Linq;
 namespace osu.Game.Rulesets.Solosu {
 	public class SolosuDifficultyCalculator : DifficultyCalculator {
 		// TODO SolosuDifficultyCalculator
-		public SolosuDifficultyCalculator ( Ruleset ruleset, WorkingBeatmap beatmap )
+		public SolosuDifficultyCalculator ( IRulesetInfo ruleset, IWorkingBeatmap beatmap )
 			: base( ruleset, beatmap ) {
 		}
 
 		protected override DifficultyAttributes CreateDifficultyAttributes ( IBeatmap beatmap, Mod[] mods, Skill[] skills, double clockRate ) {
-			return new DifficultyAttributes( mods, skills, beatmap.BeatmapInfo.StarDifficulty );
+			return new DifficultyAttributes( mods, beatmap.BeatmapInfo.Difficulty.OverallDifficulty );
 		}
 
 		protected override IEnumerable<DifficultyHitObject> CreateDifficultyHitObjects ( IBeatmap beatmap, double clockRate ) => Enumerable.Empty<DifficultyHitObject>();

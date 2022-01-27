@@ -31,7 +31,7 @@ namespace osu.Game.Rulesets.Solosu {
 		public override IBeatmapConverter CreateBeatmapConverter ( IBeatmap beatmap ) => new SolosuBeatmapConverter( beatmap, this );
 		public override IBeatmapProcessor CreateBeatmapProcessor ( IBeatmap beatmap ) => new SolosuBeatmapProcessor( beatmap );
 
-		public override DifficultyCalculator CreateDifficultyCalculator ( WorkingBeatmap beatmap ) => new SolosuDifficultyCalculator( this, beatmap );
+		public override DifficultyCalculator CreateDifficultyCalculator ( IWorkingBeatmap beatmap ) => new SolosuDifficultyCalculator( RulesetInfo, beatmap );
 		public override IConvertibleReplayFrame CreateConvertibleReplayFrame ()
 			=> new SolosuReplayFrame();
 

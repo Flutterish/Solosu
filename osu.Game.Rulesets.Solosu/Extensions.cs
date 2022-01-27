@@ -65,7 +65,7 @@ namespace osu.Game.Rulesets.Solosu {
 			=> from + ( to - from ) * (float)progress;
 
 		public static Random Random ( this IBeatmap beatmap )
-			=> new Random( (int)( beatmap.BeatmapInfo.Length + beatmap.BeatmapInfo.ID + beatmap.BeatmapInfo.AudioLeadIn * beatmap.BeatmapInfo.BeatDivisor / beatmap.BeatmapInfo.BPM ) );
+			=> new Random( (int)( beatmap.BeatmapInfo.Length + beatmap.BeatmapInfo.ID.GetHashCode() + beatmap.BeatmapInfo.AudioLeadIn * beatmap.BeatmapInfo.BeatDivisor / beatmap.BeatmapInfo.BPM ) );
 
 		public delegate void Mutator<T> ( ref T value );
 		public static IEnumerable<T> Mutate<T> ( this IEnumerable<T> self, Mutator<T> mutator ) {

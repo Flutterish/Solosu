@@ -20,7 +20,7 @@ namespace osu.Game.Rulesets.Solosu.Objects {
 		}
 
 		public double BonusInterval { get; private set; }
-		protected override void ApplyDefaultsToSelf ( ControlPointInfo controlPointInfo, BeatmapDifficulty difficulty ) {
+		protected override void ApplyDefaultsToSelf ( ControlPointInfo controlPointInfo, IBeatmapDifficultyInfo difficulty ) {
 			base.ApplyDefaultsToSelf( controlPointInfo, difficulty );
 			BonusInterval = controlPointInfo.TimingPointAt( StartTime ).BeatLength;
 		}

@@ -11,7 +11,6 @@ namespace osu.Game.Rulesets.Solosu.Mods {
 		public override string Name => "Autopilot";
 		public override string Acronym => "AP";
 		public override double ScoreMultiplier => 1;
-		public override bool Ranked => false;
 		public override Type[] IncompatibleMods => new[] { typeof( ModRelax ), typeof( ModAutoplay ) };
 		public override bool HasImplementation => true;
 	}
