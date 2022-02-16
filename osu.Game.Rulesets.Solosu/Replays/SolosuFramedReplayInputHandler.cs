@@ -8,7 +8,7 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 		public SolosuFramedReplayInputHandler ( Replay replay ) : base( replay ) { }
 
 		protected override bool IsImportant ( SolosuReplayFrame frame ) => true;
-		public override void CollectPendingInputs ( List<IInput> inputs ) {
+		protected override void CollectReplayInputs ( List<IInput> inputs ) {
 			inputs.Add( new ReplayState<SolosuAction> {
 				PressedActions = CurrentFrame?.Actions ?? new List<SolosuAction>()
 			} );
