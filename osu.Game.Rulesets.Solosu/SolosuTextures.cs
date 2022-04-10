@@ -7,12 +7,15 @@ namespace osu.Game.Rulesets.Solosu {
 	public static class SolosuTextures {
 		public static Texture Generate ( int width, int height, Func<int, int, Rgba32> generator ) {
 			Image<Rgba32> image = new Image<Rgba32>( width, height );
-			for ( int y = 0; y < height; y++ ) {
-				var span = image.GetPixelRowSpan( y );
-				for ( int x = 0; x < width; x++ ) {
-					span[ x ] = generator( x, y );
-				}
-			}
+			image.ProcessPixelRows( rows => {
+				for ( int y = 0; y < height; y++ ) {
+					var span = rows.GetRowSpan( y );
+					for ( int x = 0; x < width; x++ ) {
+						span[ x ] = generator( x, y );
+					}
+				}		
+			} );
+			
 			Texture texture = new Texture( width, height, true );
 			texture.SetData( new TextureUpload( image ) );
 			return texture;
