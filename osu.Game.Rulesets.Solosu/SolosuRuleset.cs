@@ -87,8 +87,8 @@ namespace osu.Game.Rulesets.Solosu {
 
 			[BackgroundDependencyLoader]
 			private void load ( TextureStore textures, GameHost host ) {
-				if ( !textures.GetAvailableResources().Contains( "Textures/Icon.png" ) )
-					textures.AddStore( host.CreateTextureLoaderStore( ruleset.CreateResourceStore() ) );
+				if ( !textures.GetAvailableResources().Contains( "Textures/SolosuIcon.png" ) )
+					textures.AddTextureSource( host.CreateTextureLoaderStore( ruleset.CreateResourceStore() ) );
 
 				Texture = textures.Get( "Textures/SolosuIcon" );
 			}
