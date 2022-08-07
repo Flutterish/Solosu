@@ -1,8 +1,10 @@
 ﻿using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.Input.Bindings;
+using osu.Framework.Localisation;
 using osu.Framework.Platform;
 using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Difficulty;
@@ -57,32 +59,55 @@ namespace osu.Game.Rulesets.Solosu {
 
 		public override Drawable CreateIcon () => new SolosuIcon( this );
 
-		private Dictionary<HitResult, string> results = new Dictionary<HitResult, string> {
-			[ HitResult.Perfect ] = "Perfect",
-			[ HitResult.Great ] = "Nice",
-			[ HitResult.Meh ] = "OK",
-			[ HitResult.Miss ] = "Corrupt"
+		private Dictionary<HitResult, LocalisableString> results = new Dictionary<HitResult, LocalisableString> {
+			[ HitResult.Perfect ] = Localisation.Judgement.Strings.Perfect,
+			[ HitResult.Great ] = Localisation.Judgement.Strings.Great,
+			[ HitResult.Meh ] = Localisation.Judgement.Strings.Ok,
+			[ HitResult.Miss ] = Localisation.Judgement.Strings.Miss
 		};
 
 		protected override IEnumerable<HitResult> GetValidHitResults ()
 			=> results.Keys;
 
 		public override string GetDisplayNameForHitResult ( HitResult result )
-			=> results[ result ];
+			=> GetLocalisedHack( results[ result ] ); // TODO this cant be localised yet
 
 		public override StatisticRow[] CreateStatisticsForScore ( ScoreInfo score, IBeatmap playableBeatmap ) => new StatisticRow[]
 		{
 
 		};
 
+		static Dictionary<LocalisableString, ILocalisedBindableString> localisationHack = new();
+		public static Func<LocalisableString, ILocalisedBindableString> LocalisationHackFactory;
+		public static string GetLocalisedHack ( LocalisableString str ) {
+			if ( !localisationHack.TryGetValue( str, out var bindable ) ) {
+				if ( LocalisationHackFactory is null ) {
+					return str.ToString();
+				}
+				else {
+					localisationHack.Add( str, bindable = LocalisationHackFactory( str ) );
+				}
+			}
+
+			return bindable.Value;
+		}
+
 		private class SolosuIcon : Sprite {
 			private readonly Ruleset ruleset;
+			[Resolved]
+			private LocalisationManager localisation { get; set; }
 			public SolosuIcon ( Ruleset ruleset ) {
 				this.ruleset = ruleset;
 				Size = new osuTK.Vector2( 40 );
 				FillMode = FillMode.Fit;
 				Origin = Anchor.Centre;
 				Anchor = Anchor.Centre;
+
+				if ( LocalisationHackFactory is null ) {
+					LocalisationHackFactory = str => {
+						return localisation.GetLocalisedBindableString( str );
+					};
+				}
 			}
 
 			[BackgroundDependencyLoader]

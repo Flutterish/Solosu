@@ -76,7 +76,6 @@ namespace osu.Game.Rulesets.Solosu.Replays {
 				else {
 					presses.Add( (( lastPressTime + time ) / 2, Array.Empty<SolosuAction>()) );
 				}
-				presses.Add( (time, SolosuAction.HardBeat.Yield()) );
 				lastPressTime = time;
 			}
 

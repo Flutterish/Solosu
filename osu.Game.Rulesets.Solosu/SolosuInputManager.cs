@@ -1,6 +1,6 @@
 ﻿using osu.Framework.Input.Bindings;
+using osu.Framework.Localisation;
 using osu.Game.Rulesets.UI;
-using System.ComponentModel;
 
 namespace osu.Game.Rulesets.Solosu {
 	public class SolosuInputManager : RulesetInputManager<SolosuAction> {
@@ -8,16 +8,14 @@ namespace osu.Game.Rulesets.Solosu {
 	}
 
 	public enum SolosuAction {
-		[Description( "Hard Beat" )]
-		HardBeat,
-
-		[Description( "Left" )]
+		[LocalisableDescription( typeof( Localisation.Action.Strings ), nameof( Localisation.Action.Strings.Left ) )]
 		Left,
 
-		[Description( "Center" )] // this is for buffered input
+		// this is for buffered input
+		[LocalisableDescription( typeof( Localisation.Action.Strings ), nameof( Localisation.Action.Strings.Center ) )]
 		Center,
 
-		[Description( "Right" )]
+		[LocalisableDescription( typeof( Localisation.Action.Strings ), nameof( Localisation.Action.Strings.Right ) )]
 		Right
 	}
 }

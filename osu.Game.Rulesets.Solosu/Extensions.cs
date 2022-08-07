@@ -54,7 +54,7 @@ namespace osu.Game.Rulesets.Solosu {
 		public static bool IsMovement ( this SolosuAction action )
 			=> action is SolosuAction.Left or SolosuAction.Right or SolosuAction.Center;
 		public static bool IsAction ( this SolosuAction action )
-			=> action is SolosuAction.HardBeat;
+			=> false;
 
 		public static bool IsEmpty<T> ( this IEnumerable<T> self )
 			=> !self.Any();
