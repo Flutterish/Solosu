@@ -60,10 +60,10 @@ namespace osu.Game.Rulesets.Solosu {
 		public override Drawable CreateIcon () => new SolosuIcon( this );
 
 		private Dictionary<HitResult, LocalisableString> results = new Dictionary<HitResult, LocalisableString> {
-			[ HitResult.Perfect ] = Localisation.Judgement.Strings.Perfect,
-			[ HitResult.Great ] = Localisation.Judgement.Strings.Great,
-			[ HitResult.Meh ] = Localisation.Judgement.Strings.Ok,
-			[ HitResult.Miss ] = Localisation.Judgement.Strings.Miss
+			[ HitResult.Perfect ] = Localisation.JudgementStrings.Perfect,
+			[ HitResult.Great ] = Localisation.JudgementStrings.Great,
+			[ HitResult.Meh ] = Localisation.JudgementStrings.Ok,
+			[ HitResult.Miss ] = Localisation.JudgementStrings.Miss
 		};
 
 		protected override IEnumerable<HitResult> GetValidHitResults ()

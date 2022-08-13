@@ -3,8 +3,8 @@
 
 using osu.Framework.Localisation;
 
-namespace osu.Game.Rulesets.Solosu.Localisation.Action {
-	public static class Strings {
+namespace osu.Game.Rulesets.Solosu.Localisation {
+	public static class ActionStrings {
 		private const string PREFIX = "osu.Game.Rulesets.Solosu.Localisation.Action.Strings";
 		private static string getKey( string key ) => $"{PREFIX}:{key}";
 

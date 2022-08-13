@@ -15,6 +15,6 @@ namespace osu.Game.Rulesets.Solosu.Mods {
 			Replay = new SolosuAutoGenerator( beatmap ).Generate(),
 		};
 
-		public override string Description => SolosuRuleset.GetLocalisedHack( Localisation.Mod.Strings.AutoplayDescription );
+		public override string Description => SolosuRuleset.GetLocalisedHack( Localisation.ModStrings.AutoplayDescription );
 	}
 }

@@ -2,6 +2,7 @@
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Rendering;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Bindings;
@@ -218,10 +219,11 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		}
 
 		private class PlayerLine : CompositeDrawable {
-			public PlayerLine () {
+			[BackgroundDependencyLoader]
+			private void load ( IRenderer renderer ) {
 				Origin = Anchor.Centre;
 				Anchor = Anchor.Centre;
-				AddInternal( new Sprite { Width = 500, Height = 2, Origin = Anchor.Centre, Anchor = Anchor.Centre, Texture = SolosuTextures.WidthFade( 500, 2 ), Alpha = 0.6f } );
+				AddInternal( new Sprite { Width = 500, Height = 2, Origin = Anchor.Centre, Anchor = Anchor.Centre, Texture = SolosuTextures.WidthFade( renderer, 500, 2 ), Alpha = 0.6f } );
 				// TODO maybe add the key being held effect from the key overlay when on the side
 			}
 		}

@@ -8,14 +8,14 @@ namespace osu.Game.Rulesets.Solosu {
 	}
 
 	public enum SolosuAction {
-		[LocalisableDescription( typeof( Localisation.Action.Strings ), nameof( Localisation.Action.Strings.Left ) )]
+		[LocalisableDescription( typeof( Localisation.ActionStrings ), nameof( Localisation.ActionStrings.Left ) )]
 		Left,
 
 		// this is for buffered input
-		[LocalisableDescription( typeof( Localisation.Action.Strings ), nameof( Localisation.Action.Strings.Center ) )]
+		[LocalisableDescription( typeof( Localisation.ActionStrings ), nameof( Localisation.ActionStrings.Center ) )]
 		Center,
 
-		[LocalisableDescription( typeof( Localisation.Action.Strings ), nameof( Localisation.Action.Strings.Right ) )]
+		[LocalisableDescription( typeof( Localisation.ActionStrings ), nameof( Localisation.ActionStrings.Right ) )]
 		Right
 	}
 }

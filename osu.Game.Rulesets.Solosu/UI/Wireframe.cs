@@ -1,7 +1,7 @@
 ﻿using osu.Framework.Allocation;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.OpenGL.Vertices;
 using osu.Framework.Graphics.Primitives;
+using osu.Framework.Graphics.Rendering;
 using osu.Framework.Graphics.Shaders;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.Layout;
@@ -54,13 +54,11 @@ namespace osu.Game.Rulesets.Solosu.UI {
 
 		private class WireframeDrawNode : DrawNode {
 			private Wireframe wf;
-			private Texture texture;
 			readonly List<Line> lines;
 			Vector2 size;
 			IShader shader;
 			float width = 3;
 			public WireframeDrawNode ( Wireframe source ) : base( source ) {
-				texture = Texture.WhitePixel;
 				wf = source;
 				lines = wf.Lines;
 			}
@@ -71,8 +69,8 @@ namespace osu.Game.Rulesets.Solosu.UI {
 				shader = wf.TextureShader;
 			}
 
-			public override void Draw ( Action<TexturedVertex2D> vertexAction ) {
-				base.Draw( vertexAction );
+			public override void Draw ( IRenderer renderer ) {
+				base.Draw( renderer );
 
 				shader.Bind();
 
@@ -86,7 +84,7 @@ namespace osu.Game.Rulesets.Solosu.UI {
 					to -= dif;
 					var perp = dif.PerpendicularLeft * width / 2;
 
-					DrawQuad( texture, new Quad( from + perp, from - perp, to + perp, to - perp ), DrawColourInfo.Colour );
+					renderer.DrawQuad( renderer.WhitePixel, new Quad( from + perp, from - perp, to + perp, to - perp ), DrawColourInfo.Colour );
 				}
 
 				shader.Unbind();
