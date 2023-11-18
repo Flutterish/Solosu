@@ -43,11 +43,9 @@ namespace osu.Game.Rulesets.Solosu.UI {
 		[BackgroundDependencyLoader]
 		private void load ( ShaderManager shaders ) {
 			TextureShader = shaders.Load( VertexShaderDescriptor.TEXTURE_2, FragmentShaderDescriptor.TEXTURE );
-			RoundedTextureShader = shaders.Load( VertexShaderDescriptor.TEXTURE_2, FragmentShaderDescriptor.TEXTURE_ROUNDED );
 		}
 
 		public IShader TextureShader { get; protected set; }
-		public IShader RoundedTextureShader { get; protected set; }
 
 		protected override DrawNode CreateDrawNode ()
 			=> new WireframeDrawNode( this );

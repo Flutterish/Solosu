@@ -1,7 +1,8 @@
-﻿using osu.Game.Rulesets.Mods;
+﻿using osu.Framework.Localisation;
+using osu.Game.Rulesets.Mods;
 
 namespace osu.Game.Rulesets.Solosu.Mods {
 	public class SolosuModNoFail : ModNoFail {
-		public override string Description => SolosuRuleset.GetLocalisedHack( Localisation.ModStrings.NoFailDescription );
+		public override LocalisableString Description => Localisation.ModStrings.NoFailDescription;
 	}
 }

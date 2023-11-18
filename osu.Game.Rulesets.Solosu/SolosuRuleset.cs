@@ -69,10 +69,10 @@ namespace osu.Game.Rulesets.Solosu {
 		protected override IEnumerable<HitResult> GetValidHitResults ()
 			=> results.Keys;
 
-		public override string GetDisplayNameForHitResult ( HitResult result )
-			=> GetLocalisedHack( results[ result ] ); // TODO this cant be localised yet
+		public override LocalisableString GetDisplayNameForHitResult ( HitResult result )
+			=> results[ result ];
 
-		public override StatisticRow[] CreateStatisticsForScore ( ScoreInfo score, IBeatmap playableBeatmap ) => new StatisticRow[]
+		public override StatisticItem[] CreateStatisticsForScore ( ScoreInfo score, IBeatmap playableBeatmap ) => new StatisticItem[]
 		{
 
 		};

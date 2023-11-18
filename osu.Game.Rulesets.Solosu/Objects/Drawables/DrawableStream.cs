@@ -36,7 +36,7 @@ namespace osu.Game.Rulesets.Solosu.Objects.Drawables {
 		List<DrawableBonus> bonuses = new();
 		protected override void OnFree () {
 			base.OnFree();
-			foreach ( var i in bonuses ) RemoveInternal( i );
+			foreach ( var i in bonuses ) RemoveInternal( i, disposeImmediately: false );
 			bonuses.Clear();
 		}
 		protected override void AddNestedHitObject ( DrawableHitObject hitObject ) {
